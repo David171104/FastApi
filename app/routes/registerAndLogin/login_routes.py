@@ -8,18 +8,6 @@ router = APIRouter()
 
 loginController = LoginController()
 
-# STATIC FOLDER
-# router.mount("/resources", StaticFiles(directory="app/resources"), name="resources")
-
-
-# FILES ROUTES
-# @router.get("/users/register")
-# async def register_page():
-#     return FileResponse("app/resources/html/register.html")
-
-# @router.get("/users/login")
-# async def login_page():
-#     return FileResponse("app/resources/html/login.html")
 
 
 
