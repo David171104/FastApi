@@ -12,8 +12,6 @@ userController = UserController()
 
 
 
-
-
 #FUNCTIONAL ROUTES
 @router.put("/users/update/{user_id}") 
 async def update(user_id: int, user: User, token_data: dict = Depends(verify_token)):
