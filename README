@@ -10,7 +10,8 @@
   </a>
 </p>
 
-<h1 align="center"> Full Stack App con FastAPI & Svelte</h1>
+
+ Full Stack App con FastAPI & Svelte
 
 <p align="center">
   <b>Proyecto moderno full-stack que utiliza FastAPI (Python) para el backend y Svelte para el frontend.</b>
