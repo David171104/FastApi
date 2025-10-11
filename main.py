@@ -8,8 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
-# Montar recursos estáticos
-app.mount("/resources", StaticFiles(directory="app/resources"), name="resources")
+
 
 origins = [
     "http://localhost",
