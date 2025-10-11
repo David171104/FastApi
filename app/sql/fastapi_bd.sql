@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-10-2025 a las 04:56:10
+-- Tiempo de generación: 11-10-2025 a las 03:47:54
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -81,6 +81,13 @@ CREATE TABLE `services` (
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `services`
+--
+
+INSERT INTO `services` (`id`, `client_id`, `technician_id`, `request_date`, `request_time`, `service_type`, `address`, `current_status`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 2, NULL, '2025-10-10', '18:50:00', 'Correctivo', '', 'pending', '2025-10-10 23:50:39', '2025-10-10 23:50:39', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -126,7 +133,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `last_name`, `email`, `document_number`, `age`, `password`, `role_id`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'david', 'altamar', 'altamardavid8@gmail.com', '3105478987', '20', 'scrypt:32768:8:1$DHMQydnmYFNcyOjP$b3ad4d07eff6776695f1a77eebd3cd3fc3c2c863c19e1a33e6369ede2bf5e1ad2be00151456de7d331dac7513e3ce26d42895dd5e3b08dab2b65a7693f0276fa', 3, '2025-10-08 01:33:10', '2025-10-08 01:33:10', NULL);
+(1, 'david', 'altamar', 'altamardavid8@gmail.com', '3105478987', '22', 'scrypt:32768:8:1$DHMQydnmYFNcyOjP$b3ad4d07eff6776695f1a77eebd3cd3fc3c2c863c19e1a33e6369ede2bf5e1ad2be00151456de7d331dac7513e3ce26d42895dd5e3b08dab2b65a7693f0276fa', 1, '2025-10-08 01:33:10', '2025-10-10 02:48:59', NULL),
+(2, 'subemisor', 'prueba', 'pruebasubemisor@gmail.com', '3105478987', '26', 'scrypt:32768:8:1$DHMQydnmYFNcyOjP$b3ad4d07eff6776695f1a77eebd3cd3fc3c2c863c19e1a33e6369ede2bf5e1ad2be00151456de7d331dac7513e3ce26d42895dd5e3b08dab2b65a7693f0276fa', 3, '2025-10-09 03:06:41', '2025-10-10 23:49:49', NULL),
+(3, 'r', 'a', 'a@gmail.com', '3105478987', '20', 'scrypt:32768:8:1$o7kmRoegFGUjBiu8$f5166d26f3686b75967102d907f6e7388421ed6fa5ca8dc9c786f6252d2553f2850003e41e7c2780b3043d77ebc22038595cf8ff681900dc169cdbc935b5cdc1', 3, '2025-10-09 23:47:09', '2025-10-09 23:47:09', NULL);
 
 --
 -- Índices para tablas volcadas
@@ -188,7 +197,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `service_report`
@@ -200,7 +209,7 @@ ALTER TABLE `service_report`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas
