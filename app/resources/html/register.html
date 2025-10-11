@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Usuario</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/resources/js/registerAndLogin/register.js?=v2" defer></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f2f3f4 ;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 30px 25px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #444;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            background-color: #4e73df;
+            color: white;
+            font-weight: bold;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2e59d9;
+        }
+
+        
+
+        .required {
+            color: red;
+        }
+
+        #message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 5px solid #28a745;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #dc3545;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Registro de Usuario</h2>
+        <div id="message"></div>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="name">Nombres <span class="required">*</span></label>
+                <input type="text" id="name" required />
+            </div>
+
+            <div class="form-group">
+                <label for="last_name">Apellidos <span class="required">*</span></label>
+                <input type="text" id="last_name" required />
+            </div>
+
+            <div class="form-group">
+                <label for="document_number">Número de documento</label>
+                <input type="text" id="document_number"  />
+            </div>
+
+            <div class="form-group">
+                <label for="age">Edad</label>
+                <input type="text" id="age"  />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Correo Electrónico <span class="required">*</span></label>
+                <input type="email" id="email" required />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña <span class="required">*</span></label>
+                <input type="password" id="password" required />
+            </div>
+            <input type="hidden" id="role_id" name="role_id" value="3">
+
+            
+            <div class="form-group">
+                <button type="submit">Registrar</button>
+            </div>
+        </form>
+
+        <div style="margin-top: 20px;">
+            <button type="button" onclick="redirectToLogin()">Iniciar sesion</button>
+        </div>
+
+
+    </div>
+
+    
+</body>
+
+</html>
