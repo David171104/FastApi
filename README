@@ -14,14 +14,13 @@
 
 ---
 
-## 🧠 Overview
+##  Descripción general
 
-This project demonstrates how to build a complete CRUD system using **FastAPI** as the backend framework and **Svelte** as the frontend framework.
+Este proyecto muestra cómo crear un sistema CRUD completo utilizando **FastAPI** como marco de trabajo backend y **Svelte** como marco de trabajo frontend.
 
-The backend handles authentication (JWT), user management, and database communication, while the frontend provides an elegant and interactive UI for consuming the API.
+El backend se encarga de la autenticación (JWT), la gestión de usuarios y la comunicación con la base de datos, mientras que el frontend proporciona una interfaz de usuario elegante e interactiva para consumir la API.
 
 ---
-
 
 
 Guía de instalación y configuración
