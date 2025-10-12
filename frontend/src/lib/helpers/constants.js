@@ -1,11 +1,26 @@
 export const STATUS_LABELS = {
   pending: "Pendiente",
+  assigned: "Asignado",
   completed: "Completado",
-  cancelled: "Cancelado",
 };
 
 export function getStatusLabel(status) {
-  return STATUS_LABELS[status] || "Desconocido";
+  switch (status) {
+    case "pending":
+      return `<span class="status-icon text-yellow-500 font-semibold flex items-center gap-2">
+        <i class="fas fa-hourglass-half"></i> ${STATUS_LABELS[status]}
+      </span>`;
+    case "asigned":
+      return `<span class="status-icon text-blue-500 font-semibold flex items-center gap-2">
+        <i class="fas fa-user-check"></i> ${STATUS_LABELS[status]}
+      </span>`;
+    case "completed":
+      return `<span class="status-icon text-green-500 font-semibold flex items-center gap-2">
+        <i class="fas fa-check-circle"></i> ${STATUS_LABELS[status]}
+      </span>`;
+    default:
+      return `<span class="text-gray-400"><i class="fas fa-question-circle"></i> Desconocido</span>`;
+  }
 }
 
 export function formatDate(value) {

@@ -4,7 +4,7 @@ from datetime import datetime, date, time
 
 
 class Service(BaseModel):
-    client_id: int
+    client_id: Optional[int] = None
     request_date: date
     request_time: time
     service_type: str

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.controllers.users.user_controller import *
 from app.models.users.user_model import User
+from app.models.services.service_model import Service
 from app.models.login.user_login_model import UserLogin
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -31,4 +32,7 @@ async def get_services(client_id: int, token_data: dict = Depends(verify_token))
     return response
 
 
- 
+@router.put("/users/services/update/{service_id}")
+async def update_service(service_id: int, service: Service, token_data: dict = Depends(verify_token)):
+    response = userController.update_service(service_id, service)
+    return response
