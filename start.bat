@@ -8,7 +8,7 @@ REM Activar entorno virtual
 call myvenv\Scripts\activate
 
 REM Iniciar servidor FastAPI
-start cmd /k "uvicorn main:app --reload"
+start cmd /k "fastapi dev main.py"
 
 timeout /t 3 > nul
 

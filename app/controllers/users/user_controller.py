@@ -115,3 +115,44 @@ class UserController:
             raise HTTPException(status_code=500, detail=str(err))
         finally:
             conn.close()
+
+
+    def update_service(self, service_id: int, service: Service):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            query = """
+                UPDATE services
+                SET 
+                    request_date = %s,
+                    request_time = %s,
+                    service_type = %s,
+                    address = %s
+                WHERE id = %s
+            """
+            values = (
+                service.request_date,
+                service.request_time,
+                service.service_type,
+                service.address,
+                service_id
+            )
+
+            cursor.execute(query, values)
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Servicio no encontrado")
+
+            return {"message": "Servicio actualizado correctamente"}
+        
+        except mysql.connector.Error as err:
+            if conn:
+                conn.rollback()
+            raise HTTPException(status_code=500, detail=f"Error en la base de datos: {err}")
+
+        finally:
+            if conn:
+                conn.close()

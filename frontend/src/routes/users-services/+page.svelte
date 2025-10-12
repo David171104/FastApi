@@ -157,41 +157,78 @@
 </style>
 
 <script>
-    import Swal from 'sweetalert2';
-    import { onMount } from 'svelte';
-    import { createService, getUserServices } from './services.js';
-    import { getStatusLabel, formatDate, formatTime } from '$lib/helpers/constants.js';
+  import Swal from 'sweetalert2';
+  import { onMount } from 'svelte';
+  import { createService, getUserServices, updateService } from './services.js';
+  import { getStatusLabel, formatDate, formatTime } from '$lib/helpers/constants.js';
 
-    let user = null;
-    let showModal = false;
-    let services = [];
-    let formData = {
-        client_id: '',
-        request_date: '',
-        request_time: '',
-        service_type: 'Correctivo',
-        address: ''
-    };
+  let user = null;
+  let showModal = false;
+  let showEditModal = false;
+  let services = [];
+  let selectedService = null;
 
-    onMount(async () => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        
-        if (user){
-            services = await getUserServices(user.id);
-            formData.client_id = user.id;
-        } 
+  let formData = {
+    client_id: '',
+    request_date: '',
+    request_time: '',
+    service_type: 'Correctivo',
+    address: ''
+  };
+
+  onMount(async () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    
+    if (user){
+      services = await getUserServices(user.id);
+      formData.client_id = user.id;
+    } 
+  });
+
+  async function handleSubmit() {
+    try {
+      await createService(formData);
+      showModal = false;
+    } catch (err) {
+      console.error("Error:", err);
+    }
+      
+  }
+
+
+    
+  function openEditServiceModal(service) {
+    selectedService = { ...service };
+    showEditModal = true;
+  }
+
+  function closeEditServiceModal() {
+    showEditModal = false;
+    selectedService = null;
+  }
+
+  async function saveChanges() {
+    const confirm = await Swal.fire({
+      title: '¿Guardar cambios?',
+      text: '¿Deseas actualizar los datos del servicio?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, guardar',
+      cancelButtonText: 'Cancelar',
     });
 
-    async function handleSubmit() {
-        try {
-            await createService(formData);
-            showModal = false;
-        } catch (err) {
-            console.error("Error:", err);
-        }
-        
-    }
+    if (!confirm.isConfirmed) return;
 
+    try {
+      await updateService(selectedService.id, selectedService);
+      Swal.fire('Éxito', 'Servicio actualizado correctamente', 'success');
+      closeEditServiceModal();
+      services = await getUserServices(user.id);
+    } catch (err) {
+      console.error('Error:', err);
+      Swal.fire('Error', 'No se pudo actualizar el servicio.', 'error');
+    }
+  }
 </script>
 
 <div class="page-container">
@@ -211,6 +248,7 @@
           <th>Tipo</th>
           <th>Dirección</th>
           <th>Estado</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -222,7 +260,10 @@
               <td>{formatTime(service.request_time)}</td>
               <td>{service.service_type}</td>
               <td>{service.address}</td>
-              <td>{getStatusLabel(service.current_status)}</td>
+              <td>{@html getStatusLabel(service.current_status)}</td>
+              <td>
+                <button class="edit-btn" on:click={() => openEditServiceModal(service)}> Editar</button>
+              </td>
             </tr>
           {/each}
         {:else}
@@ -259,6 +300,40 @@
       <div class="modal-actions">
         <button class="save-btn" on:click={handleSubmit}>Guardar</button>
         <button class="cancel-btn" on:click={() => (showModal = false)}>Cancelar</button>
+      </div>
+    </div>
+  </div>
+{/if}
+
+
+
+{#if showEditModal}
+  <div class="modal-backdrop">
+    <div class="modal">
+      <h3>Editar Servicio</h3>
+
+      
+      <label>Fecha del servicio</label>
+      <input type="date" bind:value={selectedService.request_date} required/>
+
+      <label>Hora del servicio</label>
+      <input type="time" bind:value={selectedService.request_time} required />
+
+      <label>Tipo de servicio</label>
+      <select bind:value={selectedService.service_type}>
+        <option value="Correctivo">Correctivo</option>
+        <option value="Preventivo">Preventivo</option>
+      </select>
+
+      <label>Dirección</label>
+      <input type="text" placeholder="Dirección del servicio" bind:value={selectedService.address} required />
+
+
+
+      <div class="modal-actions">
+        <button class="save-btn" on:click={saveChanges} disabled={!selectedService}>Guardar</button>
+
+        <button class="cancel-btn" on:click={closeEditServiceModal}>❌ Cancelar</button>
       </div>
     </div>
   </div>

@@ -1,13 +1,11 @@
-<!-- <script>
-	import Footer from "$lib/components/Footer.svelte";
-	import 	Navbar from "$lib/components/Navbar.svelte";
-	import Swal from 'sweetalert2';
-</script>
-
-<Navbar></Navbar>
-
-
-<slot></slot> -->
+<svelte:head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+</svelte:head>
 
 <script>
   import Footer from "$lib/components/Footer.svelte";
@@ -17,14 +15,14 @@
   import { onMount } from 'svelte';
 
   let loggedIn = false;
-  let ready = false; // ✅ nueva variable
+  let ready = false; 
 
   $: loggedIn = $isAuthenticated;
 
   onMount(() => {
     const token = localStorage.getItem('token');
     if (token) isAuthenticated.set(true);
-    ready = true; // ya revisamos localStorage
+    ready = true; 
   });
 </script>
 
