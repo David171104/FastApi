@@ -80,3 +80,41 @@ export async function updateService(serviceId, updatedService) {
     return null; 
   }
 }
+
+
+export async function deleteService(serviceId) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    Swal.fire("Sesión expirada", "Por favor inicia sesión nuevamente.", "warning");
+    goto("/login");
+    return;
+  }
+
+  try {
+    const res = await axios.put(
+      `${API_URL}/services/delete/${serviceId}`,
+      {}, // cuerpo vacío
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    Swal.fire("¡Éxito!", "Servicio eliminado correctamente.", "success");
+    return res.data;
+  } catch (err) {
+    console.error("Error al eliminar el servicio:", err);
+
+    if (err.response?.status === 401) {
+      Swal.fire("Sesión expirada", "Por favor inicia sesión nuevamente.", "warning");
+      goto("/login");
+    } else {
+      Swal.fire("Error", err.response?.data?.detail || "No se pudo eliminar el servicio.", "error");
+    }
+
+    return null;
+  }
+}
