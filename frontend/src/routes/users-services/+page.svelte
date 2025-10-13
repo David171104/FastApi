@@ -153,13 +153,23 @@
     background-color: #e64b4b;
   }
 
-  
+  .delete-btn {
+    background-color: #e63946;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .delete-btn:hover {
+    background-color: #d62828;
+  }
 </style>
 
 <script>
   import Swal from 'sweetalert2';
   import { onMount } from 'svelte';
-  import { createService, getUserServices, updateService } from './services.js';
+  import { createService, getUserServices, updateService, deleteService } from './services.js';
   import { getStatusLabel, formatDate, formatTime } from '$lib/helpers/constants.js';
 
   let user = null;
@@ -197,10 +207,11 @@
 
 
     
-  function openEditServiceModal(service) {
-    selectedService = { ...service };
-    showEditModal = true;
-  }
+ function openEditServiceModal(service) {
+  selectedService = { ...service, request_time: formatTime(service.request_time) };
+  showEditModal = true;
+}
+
 
   function closeEditServiceModal() {
     showEditModal = false;
@@ -223,12 +234,35 @@
       await updateService(selectedService.id, selectedService);
       Swal.fire('Éxito', 'Servicio actualizado correctamente', 'success');
       closeEditServiceModal();
-      services = await getUserServices(user.id);
+      
     } catch (err) {
       console.error('Error:', err);
       Swal.fire('Error', 'No se pudo actualizar el servicio.', 'error');
     }
   }
+
+  async function handleDelete(serviceId) {
+    const confirm = await Swal.fire({
+      title: '¿Eliminar servicio?',
+      text: 'Esta acción marcará el servicio como eliminado.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await deleteService(serviceId);
+      Swal.fire('Eliminado', 'El servicio fue eliminado correctamente', 'success');
+      
+    } catch (err) {
+      console.error('Error:', err);
+      Swal.fire('Error', 'No se pudo eliminar el servicio.', 'error');
+    }
+  }
+
 </script>
 
 <div class="page-container">
@@ -263,6 +297,7 @@
               <td>{@html getStatusLabel(service.current_status)}</td>
               <td>
                 <button class="edit-btn" on:click={() => openEditServiceModal(service)}> Editar</button>
+                <button class="delete-btn" on:click={() => handleDelete(service.id)}>Eliminar</button>
               </td>
             </tr>
           {/each}

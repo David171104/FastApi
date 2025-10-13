@@ -54,37 +54,26 @@ export function formatDate(value) {
   return '';
 }
 
-/**
- * Formatea hora a HH:MM.
- * Acepta: Date, timestamp (número), 'HH:MM:SS', 'HH:MM', 'YYYY-MM-DDTHH:MM:SS...'
- */
 export function formatTime(value) {
-  if (!value && value !== 0) return '';
+  if (value == null) return '';
 
-  // Si es Date
-  if (value instanceof Date) {
-    const d = value;
-    const hh = String(d.getHours()).padStart(2, '0');
-    const mm = String(d.getMinutes()).padStart(2, '0');
-    return `${hh}:${mm}`;
-  }
-
-
+  // Si es número (segundos desde medianoche)
   if (typeof value === 'number') {
-    return formatTime(new Date(value));
+    const hours = Math.floor(value / 3600);
+    const minutes = Math.floor((value % 3600) / 60);
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
   }
 
+  // Si viene como string "HH:MM:SS"
+  const val = String(value);
+  const match = val.match(/^(\d{2}):(\d{2})/);
+  if (match) return `${match[1]}:${match[2]}`;
 
-  if (typeof value === 'string') {
-    // Si viene "HH:MM:SS" o "HH:MM"
-    const timeOnlyMatch = value.match(/^(\d{2}):(\d{2})/);
-    if (timeOnlyMatch) return `${timeOnlyMatch[1]}:${timeOnlyMatch[2]}`;
+  // Si viene como ISO "2025-10-10T22:01:00Z"
+  const isoMatch = val.match(/T(\d{2}):(\d{2})/);
+  if (isoMatch) return `${isoMatch[1]}:${isoMatch[2]}`;
 
-    // Si viene ISO "YYYY-MM-DDTHH:MM:SS..."
-    const isoPart = value.split('T').pop(); 
-    const isoMatch = isoPart && isoPart.match(/^(\d{2}):(\d{2})/);
-    if (isoMatch) return `${isoMatch[1]}:${isoMatch[2]}`;
-  }
-
-  return '';
+  return val;
 }
+
+

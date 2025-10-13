@@ -1,5 +1,6 @@
 import mysql.connector
 from fastapi import HTTPException, Request
+from datetime import datetime
 from app.config.db_config import get_db_connection #Connection to BD
 from app.models.users.user_model import User #Model
 from app.models.services.service_model import Service
@@ -148,6 +149,38 @@ class UserController:
 
             return {"message": "Servicio actualizado correctamente"}
         
+        except mysql.connector.Error as err:
+            if conn:
+                conn.rollback()
+            raise HTTPException(status_code=500, detail=f"Error en la base de datos: {err}")
+
+        finally:
+            if conn:
+                conn.close()
+
+
+    
+    def delete_service(self, service_id: int):
+        conn = None
+        print("entro")
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+
+            cursor.execute("SELECT id FROM services WHERE id = %s AND deleted_at IS NULL", (service_id,))
+            service = cursor.fetchone()
+
+            if not service:
+                raise HTTPException(status_code=404, detail="Servicio no encontrado o ya eliminado")
+
+
+            deleted_at = datetime.now()
+            cursor.execute("UPDATE services SET deleted_at = %s WHERE id = %s", (deleted_at, service_id))
+            conn.commit()
+
+            return {"message": "Servicio eliminado correctamente", "deleted_at": deleted_at}
+
         except mysql.connector.Error as err:
             if conn:
                 conn.rollback()

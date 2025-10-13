@@ -36,3 +36,9 @@ async def get_services(client_id: int, token_data: dict = Depends(verify_token))
 async def update_service(service_id: int, service: Service, token_data: dict = Depends(verify_token)):
     response = userController.update_service(service_id, service)
     return response
+
+
+@router.put("/users/services/delete/{service_id}")
+async def delete_service(service_id: int, token_data: dict = Depends(verify_token)):
+    response = userController.delete_service(service_id)
+    return response
