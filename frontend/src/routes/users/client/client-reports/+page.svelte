@@ -1,19 +1,4 @@
 <script>
-  import { onMount } from "svelte";
-  import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    PieChart,
-    Pie,
-    Cell,
-    Legend,
-    ResponsiveContainer
-  } from "recharts";
-
   // Datos de ejemplo
   const resumen = [
     { titulo: "Servicios este mes", valor: 28, color: "#00d4b3" },
@@ -27,12 +12,6 @@
     { tipo: "Mantenimiento", cantidad: 12 },
     { tipo: "Recarga", cantidad: 5 },
     { tipo: "Diagnóstico", cantidad: 8 }
-  ];
-
-  const datosPie = [
-    { estado: "Completado", valor: 19, color: "#00d4b3" },
-    { estado: "En curso", valor: 3, color: "#1ea9ff" },
-    { estado: "Pendiente", valor: 6, color: "#d4d4d4" }
   ];
 
   const reportes = [
@@ -76,43 +55,36 @@
     {/each}
   </section>
 
-  <!-- Gráficas -->
+  <!-- Simulación de gráficas -->
   <section class="graficas">
-    <div class="grafica">
+    <div class="grafica barras">
       <h2>Servicios por tipo</h2>
-      <ResponsiveContainer width="100%" height={250}>
-        <BarChart data={datosBarras}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3b" />
-          <XAxis dataKey="tipo" stroke="#d4d4d4" />
-          <YAxis stroke="#d4d4d4" />
-          <Tooltip />
-          <Bar dataKey="cantidad" fill="#00d4b3" />
-        </BarChart>
-      </ResponsiveContainer>
+      <div class="bar-chart">
+        {#each datosBarras as d}
+          <div class="bar-item">
+            <div class="bar" style="height: {d.cantidad * 10}px"></div>
+            <span>{d.tipo}</span>
+          </div>
+        {/each}
+      </div>
     </div>
 
-    <div class="grafica">
+    <div class="grafica circular">
       <h2>Estados de servicios</h2>
-      <ResponsiveContainer width="100%" height={250}>
-        <PieChart>
-          <Pie
-            data={datosPie}
-            dataKey="valor"
-            nameKey="estado"
-            outerRadius={80}
-            label
-          >
-            {#each datosPie as d}
-              <Cell fill={d.color} />
-            {/each}
-          </Pie>
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
+      <div class="pie">
+        <div class="slice completado"></div>
+        <div class="slice pendiente"></div>
+        <div class="slice curso"></div>
+      </div>
+      <ul class="leyenda">
+        <li><span class="color completado"></span> Completado</li>
+        <li><span class="color curso"></span> En curso</li>
+        <li><span class="color pendiente"></span> Pendiente</li>
+      </ul>
     </div>
   </section>
 
-  <!-- Tabla de reportes -->
+  <!-- Tabla -->
   <section class="tabla">
     <h2>Reportes recientes</h2>
     <table>
@@ -167,6 +139,7 @@
     margin-top: 0.5rem;
   }
 
+  /* Tarjetas resumen */
   .resumen {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -199,6 +172,7 @@
     margin-top: 0.5rem;
   }
 
+  /* Gráficas */
   .graficas {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -218,9 +192,85 @@
   .grafica h2 {
     color: #00d4b3;
     font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Gráfica de barras simulada */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 200px;
+  }
+
+  .bar-item {
+    text-align: center;
+  }
+
+  .bar {
+    width: 30px;
+    background: linear-gradient(180deg, #00d4b3, #1ea9ff);
+    border-radius: 6px 6px 0 0;
+    transition: height 0.3s ease;
+  }
+
+  .bar-item span {
+    display: block;
+    margin-top: 0.5rem;
+    color: #d4d4d4;
+    font-size: 0.85rem;
+  }
+
+  /* Gráfica circular simulada */
+  .circular {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pie {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: conic-gradient(
+      #00d4b3 0deg 200deg,
+      #1ea9ff 200deg 260deg,
+      #d4d4d4 260deg 360deg
+    );
     margin-bottom: 1rem;
   }
 
+  .leyenda {
+    list-style: none;
+    padding: 0;
+  }
+
+  .leyenda li {
+    color: #d4d4d4;
+    margin: 4px 0;
+    font-size: 0.9rem;
+  }
+
+  .color {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    margin-right: 8px;
+  }
+
+  .color.completado {
+    background: #00d4b3;
+  }
+  .color.curso {
+    background: #1ea9ff;
+  }
+  .color.pendiente {
+    background: #d4d4d4;
+  }
+
+  /* Tabla */
   .tabla {
     width: 100%;
     max-width: 1000px;
@@ -264,10 +314,6 @@
 
   .estado.pendiente {
     color: #d4d4d4;
-  }
-
-  .estado.en {
-    color: #1ea9ff;
   }
 
   @media (max-width: 600px) {

@@ -15,7 +15,7 @@ registerController = RegisterController()
 
 
 #FUNCTIONAL ROUTES
-@router.post("/users/create_user")
+@router.post("/api/users/create_user")
 async def create_user(user: User):
     response = registerController.create_user(user)
     return response
