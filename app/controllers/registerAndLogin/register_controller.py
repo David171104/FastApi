@@ -12,6 +12,7 @@ class RegisterController:
         
 
     def create_user(self, user: User):   
+        print("Entro")
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
