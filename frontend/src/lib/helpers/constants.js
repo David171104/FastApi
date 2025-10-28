@@ -7,19 +7,32 @@ export const STATUS_LABELS = {
 export function getStatusLabel(status) {
   switch (status) {
     case "pending":
-      return `<span class="status-icon text-yellow-500 font-semibold flex items-center gap-2">
-        <i class="fas fa-hourglass-half"></i> ${STATUS_LABELS[status]}
-      </span>`;
-    case "asigned":
-      return `<span class="status-icon text-blue-500 font-semibold flex items-center gap-2">
-        <i class="fas fa-user-check"></i> ${STATUS_LABELS[status]}
-      </span>`;
+      return `
+        <span class="status-icon" style="display:flex;align-items:center;gap:6px;font-weight:600;color:#EAB308;">
+          <i class="fas fa-hourglass-half"></i> ${STATUS_LABELS[status]}
+        </span>
+      `;
+
+    case "assigned":
+      return `
+        <span class="status-icon" style="display:flex;align-items:center;gap:6px;font-weight:600;color:#03036E;">
+          <i class="fas fa-user-check"></i> ${STATUS_LABELS[status]}
+        </span>
+      `;
+
     case "completed":
-      return `<span class="status-icon text-green-500 font-semibold flex items-center gap-2">
-        <i class="fas fa-check-circle"></i> ${STATUS_LABELS[status]}
-      </span>`;
+      return `
+        <span class="status-icon" style="display:flex;align-items:center;gap:6px;font-weight:600;color:#16A34A;">
+          <i class="fas fa-check-circle"></i> ${STATUS_LABELS[status]}
+        </span>
+      `;
+
     default:
-      return `<span class="text-gray-400"><i class="fas fa-question-circle"></i> Desconocido</span>`;
+      return `
+        <span class="status-icon" style="display:flex;align-items:center;gap:6px;color:#9CA3AF;">
+          <i class="fas fa-question-circle"></i> Desconocido
+        </span>
+      `;
   }
 }
 
