@@ -162,7 +162,6 @@ class UserController:
     
     def delete_service(self, service_id: int):
         conn = None
-        print("entro")
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
