@@ -32,7 +32,7 @@ class LoginController:
                     "role_id": userData['role_id']
                 }
             )
-            print('access token', access_token)
+           
             return JSONResponse(status_code=200, content={
                 "message": "Login exitoso",
                 "access_token": access_token,
