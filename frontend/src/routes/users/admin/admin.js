@@ -34,8 +34,38 @@ export async function getUsers() {
   }
 }
 
+export async function createUser(formData) {
+  try {
+    const token = localStorage.getItem("token");
 
+    if (!token) {
+      goto("/login");
+      return;
+    }
 
+    
+    const response = await axios.post(`${API_URL}/admin-create_user`, formData, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    Swal.fire(" ¡Éxito!", "Usuario creado correctamente.", "success");
+    return response.data;
+
+  } catch (err) {
+    console.error(" Error creando usuario:", err);
+
+    const msg =
+      err.response?.data?.detail ||
+      err.response?.data?.message ||
+      "No se pudo crear el usuario.";
+
+    Swal.fire("Error", msg, "error");
+    throw err;
+  }
+}
 export async function updateUser(userId, updatedUser) {
   const token = localStorage.getItem("token");
 
@@ -61,3 +91,29 @@ export async function updateUser(userId, updatedUser) {
     throw err;
   }
 }
+
+export async function deleteUser(userId) {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.delete(`${API_URL}/delete/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    Swal.fire({
+      icon: "success",
+      title: "Usuario eliminado",
+      text: res.data.message,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error.response?.data?.detail || "No se pudo eliminar el usuario.",
+    });
+    throw error;
+  }
+}
+

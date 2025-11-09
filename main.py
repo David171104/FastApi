@@ -4,6 +4,7 @@ from app.routes.registerAndLogin.login_routes import router as login_router
 from app.routes.users.user_routes import router as user_router
 from app.routes.users.admin_routes import router as admin_router
 from app.routes.permissions.permissions_routes import router as permission_router
+from app.routes.roles.roles_routes import router as roles_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -31,6 +32,8 @@ app.include_router(login_router)
 app.include_router(user_router)
 app.include_router(admin_router)
 app.include_router(permission_router)
+app.include_router(permission_router)
+app.include_router(roles_router)
 
 if __name__ == "__main__":
     import uvicorn

@@ -55,20 +55,50 @@
     background-color: #3f3f6b;
   }
 
-  .edit-btn {
-    background-color: #00d1b2;
-    border: none;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background 0.3s ease;
-  }
+/* Contenedor de botones */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* Espacio entre botones */
+}
 
-  .edit-btn:hover {
-    background-color: #00b89c;
-  }
+/* Botones */
+.edit-btn,
+.delete-btn {
+  border: none;
+  border-radius: 6px;
+  color: white;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+/* Colores y efectos */
+.edit-btn {
+  background-color: #3498db;
+}
+.edit-btn:hover {
+  background-color: #2980b9;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+}
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Íconos Font Awesome */
+.fa-pen-to-square,
+.fa-trash {
+  font-size: 14px;
+}
 
   .modal-backdrop {
     position: fixed;
@@ -142,11 +172,42 @@
   .cancel-btn:hover {
     background-color: #e64b4b;
   }
+
+  .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.create-btn {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.create-btn:hover {
+  background-color: #059669;
+}
+
 </style>
 
 <div class="page-container">
   <div class="card">
-    <h2> Lista de Usuarios</h2>
+    <div class="header">
+      <h2>Lista de Usuarios</h2>
+      <button class="create-btn" on:click={openCreateModal}>
+        <i class="fa-solid fa-user-plus"></i> Nuevo Usuario
+      </button>
+    </div>
 
     {#if error}
       <p class="error">{error}</p>
@@ -174,13 +235,23 @@
               <td>{user.document_number}</td>
               <td>{user.age}</td>
               <td>
-                {#if user.role_id === 1}Administrador
-                {:else if user.role_id === 2}Técnico
-                {:else if user.role_id === 3}Cliente
-                {:else}Desconocido{/if}
+                {#if roles.length > 0}
+                  {#each roles as role}
+                    {#if role.id === user.role_id}
+                      {role.name}
+                    {/if}
+                  {/each}
+                {:else}
+                  Cargando...
+                {/if}
               </td>
-              <td>
-                <button class="edit-btn" on:click={() => openEditModal(user)}> Editar</button>
+              <td class="action-buttons">
+                <button class="edit-btn" on:click={() => openEditModal(user)}>
+                  <i class="fa-solid fa-pen-to-square"></i> Editar
+                </button>
+                <button class="delete-btn" on:click={() => handleDeleteUser(user.id)}>
+                  <i class="fa-solid fa-trash"></i> Eliminar
+                </button>
               </td>
             </tr>
           {/each}
@@ -195,7 +266,7 @@
 {#if showModal}
   <div class="modal-backdrop">
     <div class="modal">
-      <h3>Editar Usuario</h3>
+      <h3>{isCreating ? 'Crear Usuario' : 'Editar Usuario'}</h3>
 
       <label>Nombre</label>
       <input bind:value={selectedUser.name} type="text" />
@@ -206,78 +277,108 @@
       <label>Email</label>
       <input bind:value={selectedUser.email} type="email" />
 
+      <label>Documento</label>
+      <input bind:value={selectedUser.document_number} type="text" />
+
       <label>Edad</label>
       <input bind:value={selectedUser.age} type="text" />
 
       <label>Rol</label>
-        <select bind:value={selectedUser.role_id}>
-            <option value={1}>Administrador</option>
-            <option value={2}>Técnico</option>
-            <option value={3}>Cliente</option>
-        </select>
-
+      <select bind:value={selectedUser.role_id}>
+        {#each roles as role}
+          <option value={role.id}>{role.name}</option>
+        {/each}
+      </select>
+      
 
       <div class="modal-actions">
-        <button class="save-btn" on:click={saveChanges}> Guardar</button>
-        <button class="cancel-btn" on:click={closeModal}>❌ Cancelar</button>
+        <button class="save-btn" on:click={saveChanges}>
+          <i class="fa-solid fa-floppy-disk"></i> Guardar
+        </button>
+        <button class="cancel-btn" on:click={closeModal}> Cancelar</button>
       </div>
     </div>
   </div>
 {/if}
 
-
-
 <script>
-    import Swal from "sweetalert2";
-    import { onMount } from 'svelte';
-    import { getUsers, updateUser } from "./admin.js";
+  import Swal from "sweetalert2";
+  import { onMount } from 'svelte';
+  import { getUsers, updateUser, deleteUser, createUser } from "./admin.js";
+  import { getRoles } from "../../roles/roles.js";
 
-    let users = [];
-    let error = '';
-    let showModal = false;
-    let selectedUser = null;
+  let users = [];
+  let roles = [];
+  let error = '';
+  let showModal = false;
+  let selectedUser = null;
+  let isCreating = false;
 
-    onMount(async () => {
-        try {
-        users = await getUsers();
-        console.log("Usuarios:", users);
-        } catch (err) {
-        error = err.message;
-        }
-    });
-
-
-    function openEditModal(user) {
-        selectedUser = { ...user };
-        showModal = true;
+  onMount(async () => {
+    try {
+      users = await getUsers();
+      roles = await getRoles();
+    } catch (err) {
+      error = err.message;
     }
+  });
 
+  function openEditModal(user) {
+    selectedUser = { ...user };
+    isCreating = false;
+    showModal = true;
+  }
 
-    function closeModal() {
-        showModal = false;
-        selectedUser = null;
-    }
+  function openCreateModal() {
+    selectedUser = { name: "", last_name: "", email: "", document_number: "", age: "", role_id: roles[0]?.id || 1 };
+    isCreating = true;
+    showModal = true;
+  }
 
+  function closeModal() {
+    showModal = false;
+    selectedUser = null;
+    isCreating = false;
+  }
 
-    
   async function saveChanges() {
     const confirm = await Swal.fire({
-      title: "¿Guardar cambios?",
-      text: "¿Deseas actualizar los datos de este usuario?",
+      title: isCreating ? "¿Crear usuario?" : "¿Guardar cambios?",
+      text: isCreating ? "Se creará un nuevo usuario." : "¿Deseas actualizar este usuario?",
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Sí, guardar",
+      confirmButtonText: "Sí, continuar",
       cancelButtonText: "Cancelar",
     });
 
     if (!confirm.isConfirmed) return;
 
     try {
-      await updateUser(selectedUser.id, selectedUser);
+      if (isCreating) {
+        await createUser(selectedUser);
+      } else {
+        await updateUser(selectedUser.id, selectedUser);
+      }
       closeModal();
-      users = await getUsers(); 
+      users = await getUsers();
     } catch (err) {
       console.error("Error:", err);
+    }
+  }
+
+  async function handleDeleteUser(userId) {
+    const confirm = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Este usuario será marcado como eliminado.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (confirm.isConfirmed) {
+      await deleteUser(userId);
+      users = await getUsers();
     }
   }
 </script>
