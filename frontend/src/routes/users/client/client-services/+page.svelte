@@ -171,8 +171,12 @@
   import { onMount } from 'svelte';
   import { createService, getUserServices, updateService, deleteService } from './services.js';
   import { getStatusLabel, formatDate, formatTime } from '$lib/helpers/constants.js';
-
+  import { hasPermissionCreate, hasPermissionEdit, hasPermissionDelete } from '$lib/helpers/permissions.js';
+  
   let user = null;
+  let canCreate = false;
+  let canEdit = false;
+  let canDelete = false;
   let showModal = false;
   let showEditModal = false;
   let services = [];
@@ -192,6 +196,14 @@
     if (user){
       services = await getUserServices(user.id);
       formData.client_id = user.id;
+
+      const permisoCrear = await hasPermissionCreate(user, 'Servicios');
+      const permisoEditar = await hasPermissionEdit(user, 'Servicios');
+      const permisoEliminar = await hasPermissionDelete(user, 'Servicios');
+
+      canCreate = permisoCrear.permiso;
+      canEdit = permisoEditar.permiso;
+      canDelete = permisoEliminar.permiso;
     } 
   });
 
@@ -269,9 +281,11 @@
   <div class="card">
     <div class="header-row">
       <h2>Servicios del Cliente</h2>
-      <button class="edit-btn" on:click={() => (showModal = true)}>
-        Solicitar Servicio
-      </button>
+      {#if canCreate}
+        <button class="edit-btn" on:click={() => (showModal = true)}>
+          Solicitar Servicio
+        </button>
+      {/if}
     </div>
 
     <table class="user-table">
@@ -296,8 +310,13 @@
               <td>{service.address}</td>
               <td>{@html getStatusLabel(service.current_status)}</td>
               <td>
-                <button class="edit-btn" on:click={() => openEditServiceModal(service)}> Editar</button>
-                <button class="delete-btn" on:click={() => handleDelete(service.id)}>Eliminar</button>
+                {#if canEdit}
+                  <button class="edit-btn" on:click={() => openEditServiceModal(service)}> Editar</button>
+                {/if}
+
+                {#if canDelete}
+                  <button class="delete-btn" on:click={() => handleDelete(service.id)}>Eliminar</button>
+                {/if}
               </td>
             </tr>
           {/each}

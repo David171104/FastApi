@@ -1,63 +1,141 @@
+<script>
+  import { onMount } from 'svelte';
+  import { getAllServices, initTechnicianSelect  } from './admin-services.js';
+  import { getStatusLabel } from '$lib/helpers/constants.js';
+  import Swal from 'sweetalert2';
+
+
+  let services = [];
+  let technicians = [];
+  let showAssignModal = false;
+  let selectedServiceId = null;
+  let selectedTechnician = "";
+  onMount(async () => {
+    try {
+      services = await getAllServices();
+      technicians =await initTechnicianSelect(technicians);
+
+      console.log("Técnicos:", technicians);
+    } catch (error) {
+      console.error("Error al inicializar:", error);
+    }
+  });
+
+
+ // Mostrar modal con Select2 dinámico
+  async function openAssignModal(serviceId) {
+    selectedServiceId = serviceId;
+    showAssignModal = true;
+
+    await tick(); // Esperar render modal antes de Select2
+
+    globalThis.$("#technicianSelect").select2({
+      placeholder: "Seleccionar técnico...",
+      data: technicians.map(t => ({
+        id: t.id,
+        text: `${t.name} ${t.last_name}`,
+      })),
+    });
+  }
+
+  function closeAssignModal() {
+    showAssignModal = false;
+    selectedTechnician = "";
+    globalThis.$("#technicianSelect").val(null).trigger("change");
+  }
+
+  async function confirmAssignTechnician() {
+    const technicianId = globalThis.$("#technicianSelect").val();
+    if (!technicianId) return alert("Seleccione un técnico antes de continuar");
+
+    try {
+      await axios.put(`${API_URL}/services/${selectedServiceId}/assign`, {
+        technician_id: technicianId,
+      });
+      alert("✅ Técnico asignado correctamente");
+      closeAssignModal();
+
+      // Refrescar lista de servicios
+      services = await getAllServices();
+    } catch (error) {
+      console.error(error);
+      alert("❌ Error al asignar técnico");
+    }
+  }
+</script>
+
+
+
 <div class="assign-container">
   <div class="assign-header">
     <h6>Asignar Servicios</h6>
     <p>Selecciona un técnico y asigna los servicios pendientes de mantenimiento.</p>
-  </div>
-
-  <div class="assign-card">
-    <div class="form-group">
-      <label for="technician">Técnico:</label>
-      <select id="technician">
-        <option value="">Seleccione un técnico...</option>
-        <option value="1">Carlos Pérez</option>
-        <option value="2">Ana Rodríguez</option>
-        <option value="3">Luis Gómez</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="service">Servicio:</label>
-      <select id="service">
-        <option value="">Seleccione un servicio...</option>
-        <option value="mantenimiento">Mantenimiento Preventivo</option>
-        <option value="reparacion">Reparación Correctiva</option>
-        <option value="instalacion">Instalación de nuevo equipo</option>
-      </select>
-    </div>
-
-    <button class="assign-btn">
-      <i class="fa fa-paper-plane"></i> Asignar Servicio
-    </button>
+        <select id="technicianSelect" class="w-full border rounded p-2"></select>
   </div>
 
   <div class="assigned-list">
-    <h4>Servicios Asignados</h4>
+    <h4>Servicios Registrados</h4>
     <table>
       <thead>
         <tr>
+          <th>ID</th>
+          <th>Cliente</th>
           <th>Técnico</th>
-          <th>Servicio</th>
+          <th>Tipo de Servicio</th>
           <th>Fecha</th>
+          <th>Hora</th>
+          <th>Dirección</th>
           <th>Estado</th>
+          <th>Acción</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Carlos Pérez</td>
-          <td>Mantenimiento Preventivo</td>
-          <td>2025-10-15</td>
-          <td><span class="status pending">Pendiente</span></td>
-        </tr>
-        <tr>
-          <td>Ana Rodríguez</td>
-          <td>Instalación</td>
-          <td>2025-10-14</td>
-          <td><span class="status completed">Completado</span></td>
-        </tr>
+        {#if services.length > 0}
+          {#each services as service}
+            <tr>
+              <td>{service.id}</td>
+              <td>{service.client_name || 'Sin cliente'}</td>
+              <td>{service.technician_name || 'Sin asignar'}</td>
+              <td>{service.service_type}</td>
+              <td>{service.request_date}</td>
+              <td>{service.request_time}</td>
+              <td>{service.address}</td>
+              <td>{@html getStatusLabel(service.current_status)}</td>
+              <td>
+                {#if service.current_status === 'pending'}
+                  <button class="assign-btn" on:click={() => openAssignModal(service.id)}>
+                    <i class="fas fa-user-gear"></i> Asignar Técnico
+                  </button>
+                {:else}
+                  <span style="color:#999;">—</span>
+                {/if}
+              </td>
+            </tr>
+          {/each}
+        {:else}
+          <tr><td colspan="9" style="text-align:center;color:#aaa;">No hay servicios registrados</td></tr>
+        {/if}
       </tbody>
     </table>
   </div>
 </div>
+
+<!-- Modal -->
+{#if showAssignModal}
+  <div class="modal-overlay" on:click={closeAssignModal}>
+    <div class="modal-content" on:click|stopPropagation>
+      <h2>Asignar Técnico</h2>
+      <p>Selecciona un técnico para este servicio:</p>
+
+         <select class="select2" id="technicianSelect"  style="width: 80%; padding: 10px; "></select>
+
+      <div class="modal-actions">
+        <button style="margin-top: 20px;" class="btn btn-cancel" on:click={closeAssignModal}>Cancelar</button>
+        <button style="margin-top: 20px;" class="btn btn-confirm" on:click={confirmAssignTechnician}>Asignar</button>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   body {
@@ -67,7 +145,7 @@
   }
 
   .assign-container {
-    max-width: 900px;
+    max-width: 1100px;
     margin: 40px auto;
     background-color: #1f1f2f;
     padding: 2rem;
@@ -87,46 +165,11 @@
     margin-bottom: 20px;
   }
 
-  .assign-card {
-    background: #24243a;
-    padding: 1.5rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    border-left: 4px solid #00ffc6;
-  }
-
-  .form-group {
-    margin-bottom: 1rem;
-  }
-
-  .form-group label {
-    font-weight: 600;
-    color: #e4e4e7;
-    display: block;
-    margin-bottom: 6px;
-  }
-
-  .form-group select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #33334d;
-    background-color: #1a1a2e;
-    color: #f1f1f1;
-    outline: none;
-    transition: all 0.3s;
-  }
-
-  .form-group select:focus {
-    border-color: #00ffc6;
-    background-color: #1e1e35;
-  }
-
   .assign-btn {
     background-color: #00ffc6;
     color: #0a0a0f;
     border: none;
-    padding: 10px 20px;
+    padding: 8px 14px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
@@ -136,15 +179,6 @@
   .assign-btn:hover {
     background-color: #00d1b2;
     transform: scale(1.03);
-  }
-
-  .assign-btn i {
-    margin-right: 8px;
-  }
-
-  .assigned-list h4 {
-    color: #00ffc6;
-    margin-bottom: 1rem;
   }
 
   table {
@@ -170,20 +204,81 @@
     background-color: #292942;
   }
 
-  .status {
-    padding: 5px 10px;
+  /* --- MODAL --- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease forwards;
+    z-index: 999;
+  }
+
+  .modal-content {
+    background: #1e1e2f;
+    color: #e4e4e7;
+    padding: 2rem;
     border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.9rem;
+    width: 420px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.3s ease forwards;
   }
 
-  .status.pending {
-    background-color: #4a3f1f;
-    color: #ffda6b;
-  }
-
-  .status.completed {
-    background-color: #1f4037;
+  .modal-content h2 {
+    margin-bottom: 1rem;
     color: #00ffc6;
+  }
+
+  .modal-content p {
+    color: #b5b5c3;
+    margin-bottom: 1rem;
+  }
+
+  
+
+  .modal-actions {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .btn-cancel {
+    background: #2d2d45;
+    color: #ccc;
+  }
+
+  .btn-confirm {
+    background: #00ffc6;
+    color: #0a0a0f;
+  }
+
+  .btn-cancel:hover {
+    background: #38385c;
+  }
+
+  .btn-confirm:hover {
+    background: #00d1b2;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
 </style>

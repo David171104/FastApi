@@ -35,3 +35,14 @@ async def update_user(user_id: int, user: User, token_data: dict = Depends(verif
 async def delete_user(user_id: int, token_data: dict = Depends(verify_token)):
     return adminController.delete_user(user_id)
  
+
+@router.get("/users/services/all")
+async def get_users(token_data: dict = Depends(verify_token)):
+    response = adminController.get_all_services()
+    return response
+
+
+@router.get("/users/technicians/all")
+def get_all_technicians(token_data: dict = Depends(verify_token)):
+    response = adminController.get_all_technicians()
+    return response
