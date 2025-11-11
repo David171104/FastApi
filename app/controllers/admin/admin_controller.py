@@ -224,7 +224,6 @@ class AdminController:
             """
             cursor.execute(query)
             services = cursor.fetchall()
-            print("services", services)
             return {"resultado": services}
 
         except Exception as e:
