@@ -268,3 +268,41 @@ class AdminController:
         finally:
             conn.close()
 
+
+    def assign_technician(self, service_id: int, technician_id: int):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+
+            cursor.execute("SELECT id FROM users WHERE id = %s AND deleted_at IS NULL", (technician_id,))
+            tech = cursor.fetchone()
+            if not tech:
+                raise HTTPException(status_code=404, detail="Técnico no encontrado.")
+
+
+            cursor.execute("SELECT id FROM services WHERE id = %s", (service_id,))
+            service = cursor.fetchone()
+            if not service:
+                raise HTTPException(status_code=404, detail="Servicio no encontrado.")
+
+
+            cursor.execute("""
+                UPDATE services
+                SET technician_id = %s, current_status = 'assigned', updated_at = NOW()
+                WHERE id = %s
+            """, (technician_id, service_id))
+            conn.commit()
+
+            return {"message": "Técnico asignado correctamente."}
+
+        except HTTPException:
+            raise
+        except Exception as e:
+            print("Error asignando técnico:", e)
+            raise HTTPException(status_code=500, detail="Error al asignar técnico.")
+        finally:
+            if conn:
+                conn.close()
+

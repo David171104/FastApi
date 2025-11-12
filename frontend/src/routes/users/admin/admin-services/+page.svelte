@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { getAllServices, initTechnicianSelect  } from './admin-services.js';
+  import { getAllServices, loadTechnicians, assignTechnician   } from './admin-services.js';
   import { getStatusLabel } from '$lib/helpers/constants.js';
   import Swal from 'sweetalert2';
 
@@ -11,55 +11,44 @@
   let selectedServiceId = null;
   let selectedTechnician = "";
   onMount(async () => {
+
     try {
       services = await getAllServices();
-      technicians =await initTechnicianSelect(technicians);
+      technicians = await loadTechnicians();
 
-      console.log("Técnicos:", technicians);
     } catch (error) {
       console.error("Error al inicializar:", error);
     }
+
   });
 
 
- // Mostrar modal con Select2 dinámico
+
   async function openAssignModal(serviceId) {
     selectedServiceId = serviceId;
     showAssignModal = true;
-
-    await tick(); // Esperar render modal antes de Select2
-
-    globalThis.$("#technicianSelect").select2({
-      placeholder: "Seleccionar técnico...",
-      data: technicians.map(t => ({
-        id: t.id,
-        text: `${t.name} ${t.last_name}`,
-      })),
-    });
   }
+
 
   function closeAssignModal() {
     showAssignModal = false;
-    selectedTechnician = "";
-    globalThis.$("#technicianSelect").val(null).trigger("change");
   }
 
+  
   async function confirmAssignTechnician() {
-    const technicianId = globalThis.$("#technicianSelect").val();
-    if (!technicianId) return alert("Seleccione un técnico antes de continuar");
+    if (!selectedTechnician) {
+      Swal.fire("Atención", "Debes seleccionar un técnico antes de continuar.", "warning");
+      return;
+    }
 
     try {
-      await axios.put(`${API_URL}/services/${selectedServiceId}/assign`, {
-        technician_id: technicianId,
-      });
-      alert("✅ Técnico asignado correctamente");
+      await assignTechnician(selectedServiceId, selectedTechnician);
+      Swal.fire("¡Éxito!", "Técnico asignado correctamente.", "success");
       closeAssignModal();
-
-      // Refrescar lista de servicios
       services = await getAllServices();
     } catch (error) {
-      console.error(error);
-      alert("❌ Error al asignar técnico");
+      const msg = error?.response?.data?.detail || "Error al asignar técnico.";
+      Swal.fire("Error", msg, "error");
     }
   }
 </script>
@@ -70,7 +59,7 @@
   <div class="assign-header">
     <h6>Asignar Servicios</h6>
     <p>Selecciona un técnico y asigna los servicios pendientes de mantenimiento.</p>
-        <select id="technicianSelect" class="w-full border rounded p-2"></select>
+       
   </div>
 
   <div class="assigned-list">
@@ -121,17 +110,27 @@
 </div>
 
 <!-- Modal -->
+
 {#if showAssignModal}
   <div class="modal-overlay" on:click={closeAssignModal}>
     <div class="modal-content" on:click|stopPropagation>
       <h2>Asignar Técnico</h2>
       <p>Selecciona un técnico para este servicio:</p>
 
-         <select class="select2" id="technicianSelect"  style="width: 80%; padding: 10px; "></select>
+      <!-- ÚNICO SELECT -->
+      <select
+        bind:value={selectedTechnician}
+        class="w-full border rounded p-2"
+      >
+        <option value="">Seleccionar técnico...</option>
+        {#each technicians as t}
+          <option value={t.id}>{t.name} {t.last_name}</option>
+        {/each}
+      </select>
 
       <div class="modal-actions">
-        <button style="margin-top: 20px;" class="btn btn-cancel" on:click={closeAssignModal}>Cancelar</button>
-        <button style="margin-top: 20px;" class="btn btn-confirm" on:click={confirmAssignTechnician}>Asignar</button>
+        <button class="btn btn-cancel" on:click={closeAssignModal}>Cancelar</button>
+        <button class="btn btn-confirm" on:click={confirmAssignTechnician}>Asignar</button>
       </div>
     </div>
   </div>
@@ -239,10 +238,23 @@
   }
 
   
+  .modal-content select {
+    background-color: #1e1e2f;
+    color: #e4e4e7;
+    border: 1px solid #00ffc6;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 1rem;
+    width: 100%;
+    margin-bottom: 1.8rem;
+    appearance: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
 
   .modal-actions {
     display: flex;
     justify-content: space-between;
+    gap: 1rem; 
   }
 
   .btn {

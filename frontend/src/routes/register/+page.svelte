@@ -1,76 +1,126 @@
 <style>
-  .page-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Ocupa toda la altura de la pantalla */
-    background-color: #1e1e2f; /* color de fondo oscuro del navbar */
-  }
+  /* Fondo general */
+.page-wrapper {
+  min-height: 100vh;
+  background-color: #161625;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
 
+/* Contenedor del formulario */
+.form-container {
+  background-color: #1e1e2f;
+  color: #e4e4e7;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  max-width: 500px;
+  width: 100%;
+}
+
+/* Título */
+.form-container h2 {
+  color: #00ffc6;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Grupo de campos */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+/* Etiquetas */
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #b5b5c3;
+}
+
+/* Asterisco obligatorio */
+.required {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #2d2d45;
+  background-color: #292942;
+  color: #e4e4e7;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00ffc6;
+  box-shadow: 0 0 0 2px rgba(0, 255, 198, 0.2);
+}
+
+/* Botón principal */
+button[type="submit"] {
+  background-color: #00ffc6;
+  color: #0a0a0f;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #00d1b2;
+  transform: scale(1.02);
+}
+
+/* Botón secundario */
+button[type="button"] {
+  background-color: transparent;
+  color: #00ffc6;
+  border: 1px solid #00ffc6;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button[type="button"]:hover {
+  background-color: #00ffc6;
+  color: #0a0a0f;
+  transform: scale(1.02);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
   .form-container {
-    background-color: #fff;
-    padding: 40px 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
+    padding: 1.5rem;
   }
 
-  h2 {
-    margin-bottom: 25px;
-    color: #1e1e2f;
-    font-size: 1.6rem;
-  }
-
-  .form-group {
-    margin-bottom: 16px;
-    text-align: left;
-  }
-
-  label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #444;
-  }
-
-  input {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 14px;
+  .form-container h2 {
+    font-size: 1.5rem;
   }
 
   button {
-    width: 100%;
-    background-color: #4e73df;
-    color: white;
-    font-weight: bold;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.3s ease;
+    font-size: 0.95rem;
   }
+}
 
-  button:hover {
-    background-color: #2e59d9;
-  }
-
-  .required {
-    color: red;
-  }
-
-  .form-container > div button {
-    background-color: #00d1b2;
-  }
-
-  .form-container > div button:hover {
-    background-color: #00a896;
-  }
 </style>
 
 <div class="page-wrapper">
@@ -116,7 +166,7 @@
     </form>
 
     <div style="margin-top: 20px;">
-      <button type="button">Iniciar sesión</button>
+      <button type="button" on:click={goToLogin}>Iniciar sesión</button>
     </div>
   </div>
 </div>
@@ -124,9 +174,14 @@
 <script>
   import Swal from "sweetalert2";
   import { register_user } from "./register.js";
+  import { goto } from "$app/navigation";
 
   function handleSubmit(event) {
     event.preventDefault();
     register_user();
+  }
+
+  function goToLogin() {
+    goto("/login");
   }
 </script>

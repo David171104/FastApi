@@ -15,7 +15,7 @@ export function getStatusLabel(status) {
 
     case "assigned":
       return `
-        <span class="status-icon" style="display:flex;align-items:center;gap:6px;font-weight:600;color:#03036E;">
+        <span class="status-icon" style="display:flex;align-items:center;gap:6px;font-weight:600;color:#4E8EF7;">
           <i class="fas fa-user-check"></i> ${STATUS_LABELS[status]}
         </span>
       `;

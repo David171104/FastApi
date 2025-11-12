@@ -43,3 +43,40 @@ class TechniccianController:
 
         finally:
             conn.close()
+
+
+    def get_services_by_technician(self, technician_id):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            query = """
+                SELECT 
+                    services.id,
+                    services.client_id,
+                    services.technician_id,
+                    services.request_date,
+                    services.request_time,
+                    services.service_type,
+                    services.address,
+                    services.current_status,
+                    CONCAT(users.name, ' ', users.last_name) AS client_name,
+                    CONCAT(users_technician.name, ' ', users_technician.last_name) AS technician_name
+                FROM services
+                LEFT JOIN users ON services.client_id = users.id
+                LEFT JOIN users AS users_technician ON services.technician_id = users_technician.id
+                WHERE services.technician_id = %s
+                ORDER BY services.request_date DESC, services.request_time DESC;
+            """
+            cursor.execute(query, (technician_id,))
+            services = cursor.fetchall()
+            
+            return {"resultado": services}
+
+        except Exception as e:
+            print("Error al obtener los servicios del técnico:", e)
+            raise HTTPException(status_code=500, detail="Error al obtener los servicios del técnico")
+        finally:
+            if conn:
+                conn.close()

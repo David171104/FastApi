@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,Request
 from app.controllers.admin.admin_controller import *
 from app.models.users.user_model import User
 from app.models.login.user_login_model import UserLogin
@@ -46,3 +46,19 @@ async def get_users(token_data: dict = Depends(verify_token)):
 def get_all_technicians(token_data: dict = Depends(verify_token)):
     response = adminController.get_all_technicians()
     return response
+
+
+
+@router.put("/users/services/{service_id}/assign")
+async def assign_technician(service_id: int, request: Request, token_data: dict = Depends(verify_token)):
+    try:
+        data = await request.json() 
+        technician_id = data.get("technician_id")
+
+        if not technician_id:
+            raise HTTPException(status_code=400, detail="El ID del técnico es obligatorio.")
+
+        return adminController.assign_technician(service_id, technician_id)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -54,23 +54,52 @@ export async function loadTechnicians() {
   }
 }
 
-export async function initTechnicianSelect() {
-  const select = $('#technicianSelect');
-
-  select.empty();
-  const technicians = await loadTechnicians();
-  select.append(new Option("Seleccionar técnico...", "", true, false));
-
- 
-  technicians.forEach(item => {
-    const option = new Option(`${item.name} ${item.last_name}`, item.id, false, false);
-    select.append(option);
-  });
 
 
-  select.select2({
-    placeholder: "Seleccionar técnico...",
-    allowClear: true,
-    width: '100%'
-  });
+
+
+
+// export async function initTechnicianSelect() {
+//   const select = $('#technicianSelectMain'); // usa un id distinto para el select fuera de la modal
+//   select.empty();
+
+//   const technicians = await loadTechnicians();
+
+//   select.append(new Option("Seleccionar técnico...", "", true, false));
+//   technicians.forEach(item => {
+//     const option = new Option(`${item.name} ${item.last_name}`, item.id, false, false);
+//     select.append(option);
+//   });
+
+//   select.select2({
+//     placeholder: "Seleccionar técnico...",
+//     allowClear: true,
+//     width: '100%'
+//   });
+
+//   return technicians; // <-- clave
+// }
+
+
+export async function assignTechnician(serviceId, technicianId) {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token no encontrado. Inicia sesión nuevamente.");
+
+    const response = await axios.put(
+      `${API_URL}/services/${serviceId}/assign`,
+      { technician_id: technicianId },
+      {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+      }
+    );
+
+    return response.data;
+  } catch (err) {
+    console.error("Error asignando técnico:", err);
+    throw err;
+  }
 }
