@@ -1,5 +1,5 @@
 <footer>
-  <p>Climatización Total — Hecho por <strong>David Altamar</strong> y <strong>Bryan Cantillo</strong> © 2025</p>
+  <p>Climatización Total — Hecho por <strong>David Altamar</strong> , <strong>Bryan Cantillo</strong> <strong>y Jonathan Soto</strong> © 2025</p>
 </footer>
 
 <style>

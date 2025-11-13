@@ -164,6 +164,61 @@
   .delete-btn:hover {
     background-color: #d62828;
   }
+
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal {
+    background: #1e1e2f;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 400px;
+    color: #e4e4e7;
+    font-family: "Poppins", sans-serif;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  h3 {
+    color: #00ffc6;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  label {
+    display: block;
+    margin-top: 0.8rem;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #2d2d45;
+    background: #292942;
+    color: #e4e4e7;
+    font-size: 0.95rem;
+  }
+
+  input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+
+  
+
 </style>
 
 <script>
@@ -171,8 +226,12 @@
   import { onMount } from 'svelte';
   import { createService, getUserServices, updateService, deleteService } from './services.js';
   import { getStatusLabel, formatDate, formatTime } from '$lib/helpers/constants.js';
-
+  import { hasPermissionCreate, hasPermissionEdit, hasPermissionDelete } from '$lib/helpers/permissions.js';
+  
   let user = null;
+  let canCreate = false;
+  let canEdit = false;
+  let canDelete = false;
   let showModal = false;
   let showEditModal = false;
   let services = [];
@@ -192,6 +251,14 @@
     if (user){
       services = await getUserServices(user.id);
       formData.client_id = user.id;
+
+      const permisoCrear = await hasPermissionCreate(user, 'Servicios');
+      const permisoEditar = await hasPermissionEdit(user, 'Servicios');
+      const permisoEliminar = await hasPermissionDelete(user, 'Servicios');
+
+      canCreate = permisoCrear.permiso;
+      canEdit = permisoEditar.permiso;
+      canDelete = permisoEliminar.permiso;
     } 
   });
 
@@ -269,9 +336,11 @@
   <div class="card">
     <div class="header-row">
       <h2>Servicios del Cliente</h2>
-      <button class="edit-btn" on:click={() => (showModal = true)}>
-        Solicitar Servicio
-      </button>
+      {#if canCreate}
+        <button class="edit-btn" on:click={() => (showModal = true)}>
+          Solicitar Servicio
+        </button>
+      {/if}
     </div>
 
     <table class="user-table">
@@ -296,8 +365,13 @@
               <td>{service.address}</td>
               <td>{@html getStatusLabel(service.current_status)}</td>
               <td>
-                <button class="edit-btn" on:click={() => openEditServiceModal(service)}> Editar</button>
-                <button class="delete-btn" on:click={() => handleDelete(service.id)}>Eliminar</button>
+                {#if canEdit}
+                  <button class="edit-btn" on:click={() => openEditServiceModal(service)}> Editar</button>
+                {/if}
+
+                {#if canDelete}
+                  <button class="delete-btn" on:click={() => handleDelete(service.id)}>Eliminar</button>
+                {/if}
               </td>
             </tr>
           {/each}
@@ -347,12 +421,21 @@
     <div class="modal">
       <h3>Editar Servicio</h3>
 
-      
       <label>Fecha del servicio</label>
-      <input type="date" bind:value={selectedService.request_date} required/>
+      <input 
+        type="date" 
+        bind:value={selectedService.request_date} 
+        required
+        disabled={selectedService.current_status === "assigned"}
+      />
 
       <label>Hora del servicio</label>
-      <input type="time" bind:value={selectedService.request_time} required />
+      <input 
+        type="time" 
+        bind:value={selectedService.request_time} 
+        required
+        disabled={selectedService.current_status === "assigned"}
+      />
 
       <label>Tipo de servicio</label>
       <select bind:value={selectedService.service_type}>
@@ -361,14 +444,28 @@
       </select>
 
       <label>Dirección</label>
-      <input type="text" placeholder="Dirección del servicio" bind:value={selectedService.address} required />
-
-
+      <input 
+        type="text" 
+        placeholder="Dirección del servicio" 
+        bind:value={selectedService.address} 
+        required 
+      />
 
       <div class="modal-actions">
-        <button class="save-btn" on:click={saveChanges} disabled={!selectedService}>Guardar</button>
+        <button 
+          class="save-btn" 
+          on:click={saveChanges} 
+          disabled={!selectedService}
+        >
+          Guardar
+        </button>
 
-        <button class="cancel-btn" on:click={closeEditServiceModal}>❌ Cancelar</button>
+        <button 
+          class="cancel-btn" 
+          on:click={closeEditServiceModal}
+        >
+          Cancelar
+        </button>
       </div>
     </div>
   </div>

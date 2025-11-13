@@ -20,6 +20,14 @@ class LoginController:
             cursor.execute("SELECT * FROM users WHERE email = %s", (user.email,))
             userData = cursor.fetchone()
 
+            
+            if userData.get("deleted_at") is not None:
+                raise HTTPException(status_code=403, detail="Tu cuenta ha sido eliminada. Contacta con el administrador.")
+
+       
+            if userData.get("status") != 1:
+                raise HTTPException(status_code=403, detail="Tu cuenta está inactiva. Contacta con el administrador.")
+        
             if not userData:
                 raise HTTPException(status_code=401, detail="Correo o contraseña incorrectos")
 
