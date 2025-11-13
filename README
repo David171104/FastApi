@@ -1,78 +1,40 @@
-#Full Stack App con FastAPI & Svelte
 
 
-#Proyecto moderno full-stack que utiliza FastAPI (Python) para el backend y Svelte para el frontend.</b>
+📁 Estructura del proyecto
+📦 proyecto
+├── 📂 backend
+│   ├── index.js
+│   ├── package.json
+│   └── start.bat
+│
+├── 📂 frontend
+│   ├── src/
+│   │   ├── lib/api.js
+│   │   └── routes/
+│   │       ├── +layout.svelte
+│   │       ├── +page.svelte
+│   │       ├── usuarios/+page.svelte
+│   │       ├── servicios/+page.svelte
+│   │       └── asignaciones/+page.svelte
+│   └── package.json
+│
+└── README.md
+
+🛠️ Instalación del Backend
+
+Entra a la carpeta backend:
+
+cd backend
 
 
----
+Inicializa las dependencias:
 
-##  Descripción general
-
-Este proyecto muestra cómo crear un sistema CRUD completo utilizando **FastAPI** como marco de trabajo backend y **Svelte** como marco de trabajo frontend.
-
-El backend se encarga de la autenticación (JWT), la gestión de usuarios y la comunicación con la base de datos, mientras que el frontend proporciona una interfaz de usuario elegante e interactiva para consumir la API.
-
----
+npm init -y
 
 
-Guía de instalación y configuración
-# 1. Descargar paquetes de Python
-Asegúrate de tener Python instalado en tu sistema.
-
-# 2. Crear un entorno virtual
-En la terminal, ejecuta el siguiente comando para crear un entorno virtual:
-
-**python -m venv myvenv**
-
-Para activar el entorno virtual:
-
-En Windows:
-
-**.\myvenv\Scripts\activate**
-
-En macOS/Linux:
-
-**source myvenv/bin/activate**
-
-# 3. Actualizar pip
-Una vez activado el entorno virtual, actualiza pip:
-
-**python -m pip install --upgrade pip**
-
-# 4. Configurar .gitignore
-Si estás utilizando Git (recomendado), crea un archivo .gitignore y agrega lo siguiente para excluir el entorno virtual del repositorio:
-
-**myvenv/**
+npm install express mysql body-parser cors
 
 
-# 5. Instalar dependencias
-Tienes dos opciones:
-
-Usando requirements.txt:
-
-**pip install -r requirements.txt**
-
-Instalando manualmente:
-
-**pip install "fastapi[standard]" uvicorn**
-
-# 6. Ejecutar proyecto 
 
 
-fastapi dev main.py
-
-# 7. desactivar entorno
-
-deactivate
-
-
-# Intrucciones para ejecutar sveltekit 
-
-npm run dev -- --open
-
-# ejecutar ambos proyectos 
-"start.bat"
-
-# paquetes npm instalados:
-axios
-sweetalert2
+Ejecutar archivo start.bat

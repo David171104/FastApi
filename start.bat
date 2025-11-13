@@ -1,28 +1,22 @@
 @echo off
-title Iniciando Proyecto Fullstack
+title Sistema de Mantenimiento de Aires - Inicio Automático
+color 0a
+echo ======================================================
+echo 🚀 INICIANDO SISTEMA DE MANTENIMIENTO DE AIRES
+echo ======================================================
+echo.
 
-echo ===============================
-echo Iniciando servidor FastAPI...
-echo ===============================
-REM Activar entorno virtual
-call myvenv\Scripts\activate
+echo Iniciando backend (Express.js)...
+start cmd /k "cd backend && npm start"
 
-REM Iniciar servidor FastAPI
-start cmd /k "fastapi dev main.py"
-
-timeout /t 3 > nul
-
-echo ===============================
-echo Iniciando servidor Svelte...
-echo ===============================
+timeout /t 5 /nobreak >nul
+echo.
+echo Iniciando frontend (SvelteKit)...
 start cmd /k "cd frontend && npm run dev"
 
-echo ===============================
-echo Ambos servidores fueron iniciados.
-echo FastAPI: http://127.0.0.1:8000
-echo Svelte:  http://localhost:5173
-echo ===============================
-
+echo.
+echo ======================================================
+echo ✅ Todo se ha iniciado correctamente.
+echo Puedes abrir tu navegador en: http://localhost:5173
+echo ======================================================
 pause
-
-
