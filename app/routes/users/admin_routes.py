@@ -62,3 +62,8 @@ async def assign_technician(service_id: int, request: Request, token_data: dict 
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.get("/api/kpis")
+async def obtener_kpis(token_data: dict = Depends(verify_token)):
+    response = adminController.obtener_kpis()
+    return response

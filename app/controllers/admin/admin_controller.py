@@ -306,3 +306,44 @@ class AdminController:
             if conn:
                 conn.close()
 
+ 
+    def obtener_kpis(self):
+        print("🔵 Entrando al endpoint /api/kpis...")
+
+        conn = get_db_connection()
+
+        if conn is None:
+            print("❌ ERROR: No se pudo establecer conexión con la base de datos.")
+            return {"error": "No hay conexión con la base de datos"}
+
+        print("✅ Conexión a MySQL ESTABLECIDA")
+
+        cursor = conn.cursor(dictionary=True)
+
+        def get_count(query):
+            print(f"📌 Ejecutando query: {query}")
+            cursor.execute(query)
+            row = cursor.fetchone()
+            print(f"➡️ Resultado: {row}")
+            return row["total"] if row and row["total"] is not None else 0
+
+        total_users = get_count("SELECT COUNT(*) AS total FROM users")
+        total_services = get_count("SELECT COUNT(*) AS total FROM services")
+        preventivos = get_count("SELECT COUNT(*) AS total FROM services WHERE service_type='Preventivo'")
+        correctivos = get_count("SELECT COUNT(*) AS total FROM services WHERE service_type='Correctivo'")
+        total_roles = get_count("SELECT COUNT(*) AS total FROM roles")
+
+        conn.close()
+
+        resultado = {
+            "users": total_users,
+            "services": total_services,
+            "preventivos": preventivos,
+            "correctivos": correctivos,
+            "roles": total_roles
+        }
+
+        print(f"🟢 KPIs generados correctamente: {resultado}")
+
+        return resultado
+    
