@@ -280,6 +280,10 @@
     background: #38385c;
   }
 
+  .text-right {
+    text-align: right;
+  }
+
   .btn-confirm:hover {
     background: #00d1b2;
   }

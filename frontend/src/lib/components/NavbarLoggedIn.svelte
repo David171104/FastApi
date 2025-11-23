@@ -47,8 +47,13 @@
         <a href="/users/client">Inicio</a>
       {/if}
 
-      {#if user.role_id === 1}
+      
+      <!-- {#if user.role_id === 1}
         <a href="/users/admin/admin-dashboard">Dashboard</a>
+      {/if} -->
+
+      {#if user.role_id === 1}
+        <a href="/users/admin/admin-users">Usuarios</a>
       {/if}
 
       {#if servicesLink}

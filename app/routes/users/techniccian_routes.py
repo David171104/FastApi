@@ -19,3 +19,22 @@ def get_services_by_technician(technician_id: int, token_data: dict = Depends(ve
     response = techniccianController.get_services_by_technician(technician_id)
     return response  
 
+@router.put("/services/{service_id}/complete")
+def complete_service(service_id: int, token_data: dict = Depends(verify_token)):
+    response = techniccianController.complete_service(service_id)
+    return response
+
+@router.post("/reports")
+def create_report(report: dict, token_data: dict = Depends(verify_token)):
+    return techniccianController.create_report(report)
+
+
+@router.get("/reports/technician/{technician_id}")
+def get_technician_reports(technician_id: int, token_data: dict = Depends(verify_token)):
+    return techniccianController.get_reports_by_technician(technician_id)
+
+
+
+@router.get("/service-report/{report_id}/pdf")
+def generate_pdf(report_id: int, token_data: dict = Depends(verify_token)):
+    return techniccianController.generate_pdf(report_id)

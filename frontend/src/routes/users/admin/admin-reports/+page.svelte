@@ -1,9 +1,40 @@
 <script>
-  // No hay lógica por ahora, es solo una página de demostración.
+  import { onMount } from "svelte";
+  import { getAllReports, downloadPDF } from "./admin-reports.js";
+  import { getStatusLabel } from '$lib/helpers/constants.js';
+
+  let reports = [];
+
+  // filtros
+  let technician_id = null; // null para que cargue todos
+  let status = "all";
+  let date_from = "";
+  let date_to = "";
+
+  onMount(async () => {
+    reports = await getAllReports();
+    console.log("reports", reports);
+  });
+
+  async function search() {
+    reports = await getAllReports({
+      technician_id,
+      status,
+      date_from,
+      date_to
+    });
+  }
+
+  function download(id) {
+    downloadPDF(id);
+  }
 </script>
 
+
+
+
 <div class="container">
-  <header class="appbar">
+  <!-- <header class="appbar">
     <div class="brand">
       <div class="logo">SD</div>
       <div>
@@ -11,94 +42,92 @@
         <div class="subtitle">Página estática de prueba (no funcional)</div>
       </div>
     </div>
-  </header>
+  </header> -->
 
   <div class="card">
-    <h3>Buscar registros</h3>
-    <p class="desc">Completa los campos para realizar una búsqueda. Esta página no ejecuta ninguna acción.</p>
+  <h3>Buscar reportes</h3>
 
-    <form class="search-form">
-      <div class="row">
-        <div class="field">
-          <label>Nombre o código</label>
-          <input type="text" placeholder="Ej: Juan Pérez, REQ-001" disabled />
-        </div>
+  <form class="search-form" on:submit|preventDefault={search}>
+    
+    <div class="row">
+      <div class="field">
+        <label>Estado</label>
+        <select bind:value={status}>
+          <option value="all">Todos</option>
+          <option value="pending">Pendiente</option>
+          <option value="in_progress">En Proceso</option>
+          <option value="completed">Completado</option>
+        </select>
+      </div>
+    </div>
 
-        <div class="field">
-          <label>Estado</label>
-          <select disabled>
-            <option>Todos</option>
-            <option>Activo</option>
-            <option>En Proceso</option>
-            <option>Completado</option>
-          </select>
+    <div class="row">
+      <div class="field">
+        <label>Rango de fechas</label>
+        <div class="dates">
+          <input type="date" bind:value={date_from} />
+          <input type="date" bind:value={date_to} />
         </div>
       </div>
+    </div>
 
-      <div class="row">
-        <div class="field">
-          <label>Rango de fechas</label>
-          <div class="dates">
-            <input type="date" disabled />
-            <input type="date" disabled />
-          </div>
-        </div>
+    <div class="buttons">
+      <button class="btn primary">Buscar</button>
+    </div>
 
-       
-      </div>
-
-      <div class="buttons">
-        <!-- <button class="btn ghost" disabled>Reset</button> -->
-        <button class="btn primary" disabled>Buscar</button>
-        <!-- <button class="btn danger" disabled>Exportar</button> -->
-      </div>
-    </form>
-  </div>
+  </form>
+</div>
 
   <div class="card table-wrap">
-    <h3>Resultados (Ejemplo)</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-         
-          <th>Cliente</th>
-          <th>Fecha</th>
-          <th>Tipo</th>
-          <th>Estado</th>
-          <th>Responsable</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-         
-          <td>Clínica Santa María</td>
-          <td>2025-10-01</td>
-          <td>Correctivo</td>
-          <td><span class="badge active">Activo</span></td>
-          <td>María López</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          
-          <td>Empresa Alfa</td>
-          <td>2025-09-29</td>
-          <td>Correctivo</td>
-          <td><span class="badge pending">Pendiente</span></td>
-          <td>Juan Torres</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          
-          <td>Industrias Beta</td>
-          <td>2025-09-25</td>
-          <td>Preventivo</td>
-          <td><span class="badge completed">Completado</span></td>
-          <td>Laura Méndez</td>
-        </tr>
-      </tbody>
-    </table>
+    <h3>Resultados </h3>
+    {#if reports.length === 0}
+      <p style="color: #666; margin-top: 10px;">No hay reportes registrados.</p>
+    {:else}
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Técnico</th>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>PDF</th>
+          </tr>
+        </thead>
+
+        <tbody>
+  {#each reports as r}
+    <tr>
+      <td>{r.id}</td>
+
+      <!-- técnico → solo tienes technician_id -->
+      <td>{r.technician_id}</td>
+
+      <!-- cliente -->
+      <td>{r.client_name}</td>
+
+      <!-- fecha formateada -->
+      <td>{new Date(r.created_at).toLocaleDateString("es-CO")}</td>
+
+      <!-- descripción -->
+      <td>{r.service_description}</td>
+
+      <!-- estado con label -->
+      <td>{@html getStatusLabel(r.current_status)}</td>
+
+      <!-- PDF -->
+      <td class="text-right">
+        <button class="btn-pdf" on:click={() => download(r.id)}>
+          <i class="fa-solid fa-file-pdf"></i> PDF
+        </button>
+      </td>
+    </tr>
+  {/each}
+</tbody>
+
+      </table>
+    {/if}
   </div>
 </div>
 
@@ -279,4 +308,24 @@
   .badge.completed {
     background-color: #60a5fa;
   }
+
+  .btn-pdf {
+    background: linear-gradient(135deg, var(--danger) 0%, #ff6b85 100%);
+    border: none;
+    cursor: pointer;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-pdf:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 78, 109, 0.4);
+}
 </style>

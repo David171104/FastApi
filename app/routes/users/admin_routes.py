@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends,Request
+from typing import Optional
 from app.controllers.admin.admin_controller import *
 from app.models.users.user_model import User
 from app.models.login.user_login_model import UserLogin
@@ -67,3 +68,15 @@ async def assign_technician(service_id: int, request: Request, token_data: dict 
 async def obtener_kpis(token_data: dict = Depends(verify_token)):
     response = adminController.obtener_kpis()
     return response
+
+# @router.get("/admin/reports")
+# async def get_all_reports_route(token_data: dict = Depends(verify_token)):
+
+#     response = adminController.get_all_reports()
+#     return {"resultado": response}
+
+@router.get("/admin/reports")
+async def get_reports( technician_id: Optional[int] = None, status: str = "all", date_from: Optional[str] = None, date_to: Optional[str] = None, token_data: dict = Depends(verify_token) ):
+    response = adminController.get_all_reports(technician_id, status, date_from, date_to)
+    return response
+ 
