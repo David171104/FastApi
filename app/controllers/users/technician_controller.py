@@ -355,7 +355,7 @@ class TechniccianController:
                 SELECT COUNT(*) AS total
                 FROM services
                 WHERE technician_id = %s
-                AND current_status = 'pending'
+                AND current_status = 'assigned'
             """, (technician_id,))
             pending = cursor.fetchone()["total"]
 
@@ -388,11 +388,98 @@ class TechniccianController:
             }
 
         except Exception as e:
-            print(f"❌ Error en get_stats: {e}")
+            print(f" Error en get_stats: {e}")
 
             return {
                 "success": False,
                 "message": "Ocurrió un error al obtener las estadísticas.",
+                "error": str(e)
+            }
+
+        finally:
+            if cursor: cursor.close()
+            if conn: conn.close()
+
+
+    def get_daily_services(self, technician_id: int):
+        conn = None
+        cursor = None
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            cursor.execute("""
+                SELECT 
+                    s.id,
+                    u.name AS client_name,
+                    u.last_name AS client_last_name,
+                    s.current_status AS current_status,
+                    DATE_FORMAT(s.request_time, '%H:%i') AS request_time
+                FROM services s
+                INNER JOIN users u ON u.id = s.client_id
+                WHERE s.technician_id = %s
+                AND s.request_date = CURDATE()
+                ORDER BY s.request_time ASC
+            """, (technician_id,))
+
+            services = cursor.fetchall()
+
+            return {
+                "success": True,
+                "services": services
+            }
+
+        except Exception as e:
+            print(f" Error en get_daily_services: {e}")
+            return {
+                "success": False,
+                "message": "Error obteniendo los servicios del día.",
+                "error": str(e)
+            }
+
+        finally:
+            if cursor: cursor.close()
+            if conn: conn.close()
+
+
+    def get_monthly_stats(self, technician_id: int):
+        conn = None
+        cursor = None
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            cursor.execute("""
+                SELECT 
+                    MONTH(request_date) AS mes,
+                    COUNT(*) AS total
+                FROM services
+                WHERE technician_id = %s
+                GROUP BY MONTH(request_date)
+                ORDER BY mes
+            """, (technician_id,))
+
+            rows = cursor.fetchall()
+
+           
+            monthly = [0] * 12
+
+            for r in rows:
+                index = int(r["mes"]) - 1
+                monthly[index] = r["total"]
+
+            return {
+                "success": True,
+                "data": monthly
+            }
+
+        except Exception as e:
+            print(f" Error en get_monthly_stats: {e}")
+            return {
+                "success": False,
+                "message": "Error obteniendo estadísticas mensuales.",
                 "error": str(e)
             }
 
