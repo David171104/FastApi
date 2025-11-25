@@ -290,6 +290,10 @@
         {/each}
       </select>
       
+       {#if isCreating}
+        <label>Contraseña</label>
+        <input bind:value={selectedUser.password} type="password" placeholder="Contraseña" />
+      {/if}
 
       <div class="modal-actions">
         <button class="save-btn" on:click={saveChanges}>
@@ -330,7 +334,7 @@
   }
 
   function openCreateModal() {
-    selectedUser = { name: "", last_name: "", email: "", document_number: "", age: "", role_id: roles[0]?.id || 1 };
+    selectedUser = { name: "", last_name: "", email: "", document_number: "", age: "", role_id: roles[0]?.id || 1,  password: ""  };
     isCreating = true;
     showModal = true;
   }

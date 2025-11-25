@@ -74,7 +74,8 @@ class AdminController:
             conn.close()
 
 
-    def create_user(self, user:User):
+    def create_user(self, user: User):
+
         if not user.name or user.name.strip() == "":
             raise HTTPException(status_code=400, detail="El nombre del usuario es obligatorio.")
         if not user.last_name or user.last_name.strip() == "":
@@ -87,30 +88,44 @@ class AdminController:
             raise HTTPException(status_code=400, detail="La edad es obligatoria.")
         if not user.role_id:
             raise HTTPException(status_code=400, detail="Debe asignar un rol al usuario.")
-        
+        if not user.password or user.password.strip() == "":
+            raise HTTPException(status_code=400, detail="Debe ingresar una contraseña.")
 
         conn = None
+
         try:
             conn = get_db_connection()
             cursor = conn.cursor(dictionary=True)
 
-
-            cursor.execute("SELECT id FROM users WHERE email = %s AND deleted_at IS NULL", (user.email,))
+          
+            cursor.execute(
+                "SELECT id FROM users WHERE email = %s AND deleted_at IS NULL",
+                (user.email,)
+            )
             existing_user = cursor.fetchone()
+
             if existing_user:
-                raise HTTPException(status_code=400, detail="Ya existe un usuario con ese correo electrónico.")
+                raise HTTPException(
+                    status_code=400,
+                    detail="Ya existe un usuario con ese correo electrónico."
+                )
 
+           
+            hashed_password = generate_password_hash(user.password, method='scrypt')
 
+            # Insertar usuario
             cursor.execute("""
-                INSERT INTO users (name, last_name, email, document_number, age, role_id, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, %s, %s, NOW(), NOW())
+                INSERT INTO users 
+                (name, last_name, email, document_number, age, role_id, password, created_at, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
             """, (
                 user.name,
                 user.last_name,
                 user.email,
                 user.document_number,
                 user.age,
-                user.role_id
+                user.role_id,
+                hashed_password
             ))
 
             conn.commit()
@@ -118,7 +133,10 @@ class AdminController:
             return {"message": f"Usuario '{user.name} {user.last_name}' creado correctamente."}
 
         except mysql.connector.Error as e:
-            raise HTTPException(status_code=500, detail=f"Error al crear usuario: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error al crear usuario: {e}"
+            )
 
         finally:
             if conn:
