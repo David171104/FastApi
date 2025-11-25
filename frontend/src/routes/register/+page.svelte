@@ -18,6 +18,7 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
   max-width: 500px;
   width: 100%;
+  margin: 0 auto;
 }
 
 /* Título */
@@ -52,7 +53,7 @@ input[type="text"],
 input[type="email"],
 input[type="password"] {
   width: 100%;
-  padding: 10px 14px;
+  padding: 10px 0px;
   border-radius: 8px;
   border: 1px solid #2d2d45;
   background-color: #292942;
