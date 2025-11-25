@@ -333,4 +333,70 @@ class TechniccianController:
                 conn.close()
 
 
+    def get_stats(self, technician_id: int):
+        conn = None
+        cursor = None
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+       
+            cursor.execute("""
+                SELECT COUNT(*) AS total
+                FROM services
+                WHERE technician_id = %s
+                AND current_status = 'completed'
+            """, (technician_id,))
+            completed = cursor.fetchone()["total"]
+
+           
+            cursor.execute("""
+                SELECT COUNT(*) AS total
+                FROM services
+                WHERE technician_id = %s
+                AND current_status = 'pending'
+            """, (technician_id,))
+            pending = cursor.fetchone()["total"]
+
+            cursor.execute("""
+                SELECT COUNT(DISTINCT client_id) AS total
+                FROM services
+                WHERE technician_id = %s
+                AND current_status = 'completed'
+            """, (technician_id,))
+            clients = cursor.fetchone()["total"]
+
+            
+            cursor.execute("""
+                SELECT AVG(client_rating) AS avg_rating
+                FROM service_report
+                WHERE service_id IN (
+                    SELECT id FROM services WHERE technician_id = %s
+                )
+            """, (technician_id,))
+            avg_rating = cursor.fetchone()["avg_rating"]
+            avg_rating = round(float(avg_rating), 1) if avg_rating else 0
+
+            
+            return {
+                "success": True,
+                "completed": completed,
+                "pending": pending,
+                "clients": clients,
+                "avg_rating": avg_rating
+            }
+
+        except Exception as e:
+            print(f"❌ Error en get_stats: {e}")
+
+            return {
+                "success": False,
+                "message": "Ocurrió un error al obtener las estadísticas.",
+                "error": str(e)
+            }
+
+        finally:
+            if cursor: cursor.close()
+            if conn: conn.close()
 

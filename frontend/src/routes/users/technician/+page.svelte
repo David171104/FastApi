@@ -1,10 +1,20 @@
 <script>
-	let stats = [
-		{ label: 'Servicios completados', value: 48, icon: 'fa-solid fa-wrench', color: '#06b6d4' },
-		{ label: 'Pendientes', value: 3, icon: 'fa-solid fa-clock', color: '#facc15' },
-		{ label: 'Clientes atendidos', value: 27, icon: 'fa-solid fa-users', color: '#3b82f6' },
-		{ label: 'Calificación promedio', value: '4.8', icon: 'fa-solid fa-star', color: '#fbbf24' },
-	];
+	import { onMount } from "svelte";
+    import Swal from 'sweetalert2';
+	import { getStats } from "./technician.js";
+	let stats = [];
+
+	onMount(async () => {
+		const user = JSON.parse(localStorage.getItem("user"));
+		const data = await getStats(user.id);
+		console.log('data', data);
+		stats = [
+			{ label: 'Servicios completados', value: data.completed, icon: 'fa-solid fa-wrench', color: '#06b6d4' },
+			{ label: 'Pendientes', value: data.pending, icon: 'fa-solid fa-clock', color: '#facc15' },
+			{ label: 'Clientes atendidos', value: data.clients, icon: 'fa-solid fa-users', color: '#3b82f6' },
+			{ label: 'Calificación promedio', value: data.avg_rating, icon: 'fa-solid fa-star', color: '#fbbf24' },
+		];
+	});
 
 	let services = [
 		{ id: 1, cliente: 'Carlos López', servicio: 'Mantenimiento Split 12000 BTU', estado: 'En progreso' },
