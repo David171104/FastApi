@@ -360,12 +360,17 @@ class AdminController:
                     sr.id,
                     sr.technician_id,
                     u.name AS client_name,
+                    u.last_name AS client_last_name,
+                    ut.name AS technician_name,
+                    ut.last_name AS technician_last_name,
                     sr.service_description,
                     sr.created_at,
                     s.current_status
                 FROM service_report sr
                 INNER JOIN services s ON s.id = sr.service_id
                 INNER JOIN users u ON u.id = s.client_id
+                INNER JOIN users ut 
+                ON ut.id = s.technician_id
                 WHERE sr.deleted_at IS NULL
             """
 

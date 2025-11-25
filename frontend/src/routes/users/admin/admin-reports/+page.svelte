@@ -13,7 +13,6 @@
 
   onMount(async () => {
     reports = await getAllReports();
-    console.log("reports", reports);
   });
 
   async function search() {
@@ -55,7 +54,7 @@
         <select bind:value={status}>
           <option value="all">Todos</option>
           <option value="pending">Pendiente</option>
-          <option value="in_progress">En Proceso</option>
+          <option value="assigned">Asignado</option>
           <option value="completed">Completado</option>
         </select>
       </div>
@@ -97,34 +96,22 @@
         </thead>
 
         <tbody>
-  {#each reports as r}
-    <tr>
-      <td>{r.id}</td>
-
-      <!-- técnico → solo tienes technician_id -->
-      <td>{r.technician_id}</td>
-
-      <!-- cliente -->
-      <td>{r.client_name}</td>
-
-      <!-- fecha formateada -->
-      <td>{new Date(r.created_at).toLocaleDateString("es-CO")}</td>
-
-      <!-- descripción -->
-      <td>{r.service_description}</td>
-
-      <!-- estado con label -->
-      <td>{@html getStatusLabel(r.current_status)}</td>
-
-      <!-- PDF -->
-      <td class="text-right">
-        <button class="btn-pdf" on:click={() => download(r.id)}>
-          <i class="fa-solid fa-file-pdf"></i> PDF
-        </button>
-      </td>
-    </tr>
-  {/each}
-</tbody>
+          {#each reports as r}
+            <tr>
+              <td>{r.id}</td>
+              <td>{r.technician_name} {r.technician_last_name}</td>
+              <td>{r.client_name} {r.client_last_name}</td>
+              <td>{new Date(r.created_at).toLocaleDateString("es-CO")}</td>
+              <td>{r.service_description}</td>
+              <td>{@html getStatusLabel(r.current_status)}</td>
+              <td class="text-right">
+                <button class="btn-pdf" on:click={() => download(r.id)}>
+                  <i class="fa-solid fa-file-pdf"></i> PDF
+                </button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
 
       </table>
     {/if}

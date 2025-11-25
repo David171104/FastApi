@@ -42,3 +42,18 @@ async def update_service(service_id: int, service: Service, token_data: dict = D
 async def delete_service(service_id: int, token_data: dict = Depends(verify_token)):
     response = userController.delete_service(service_id)
     return response
+
+
+@router.get("/users/reports/client/{client_id}")
+async def get_technician_reports(client_id: int, token_data: dict = Depends(verify_token)):
+    return userController.get_reports_by_client(client_id)
+
+
+
+@router.get("/users/report/{report_id}")
+async def get_report_by_id(report_id: int, token_data: dict = Depends(verify_token)):
+    return userController.get_report_by_id(report_id)
+
+@router.put("/users/update/reports/{report_id}")
+async def update_report(report_id: int, body: dict, current_user: dict = Depends(verify_token)):
+    return userController.update_report(report_id, body)

@@ -174,16 +174,35 @@ class TechniccianController:
         conn = None
         try:
             conn = get_db_connection()
-            cursor = conn.cursor()
+            cursor = conn.cursor(dictionary=True)
 
-            cursor.execute("""
-                SELECT id, service_id, service_description, service_duration,
-                    recommendation, client_rating, client_comments, created_at
-                FROM service_report
-                WHERE technician_id = %s AND deleted_at IS NULL
-                ORDER BY id DESC
-            """, (technician_id,))
+            query = """
+                SELECT
+                    sr.id,
+                    sr.service_id,
+                    s.current_status,
+                    sr.technician_id,
+                    
+                    -- Cliente dueño del servicio
+                    u.name AS client_name,
+                    u.last_name AS client_last_name,
 
+                    sr.service_description,
+                    sr.service_duration,
+                    sr.recommendation,
+                    sr.client_rating,
+                    sr.client_comments,
+                    sr.created_at
+
+                FROM service_report sr
+                INNER JOIN services s ON s.id = sr.service_id
+                INNER JOIN users u ON u.id = s.client_id
+                WHERE sr.technician_id = %s
+                AND sr.deleted_at IS NULL
+                ORDER BY sr.id DESC
+            """
+
+            cursor.execute(query, (technician_id,))
             return cursor.fetchall()
 
         except mysql.connector.Error as e:
@@ -193,6 +212,7 @@ class TechniccianController:
             if conn:
                 cursor.close()
                 conn.close()
+
 
 
     def generate_pdf(self, report_id: int):
