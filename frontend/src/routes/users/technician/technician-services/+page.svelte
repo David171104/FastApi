@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import Swal from 'sweetalert2';
-    import { getTechnicianServices } from "./technician-services.js";
+    import { getTechnicianServices, completeService  } from "./technician-services.js";
     import { getStatusLabel, formatDate, formatTime } from '$lib/helpers/constants.js';
 
     let services = [];
@@ -70,6 +70,24 @@
     });
 
 
+    async function markAsCompleted(service) {
+        try {
+            const result = await completeService(service.id);
+
+            Swal.fire({
+                title: "✔ Servicio completado",
+                text: "El servicio se marcó como completado.",
+                icon: "success",
+            });
+
+            // actualizar en frontend sin recargar todo
+            service.current_status = "completed";
+            services = [...services];
+        } catch (error) {
+            console.error(error);
+            Swal.fire("Error", "No se pudo completar el servicio", "error");
+        }
+    }
 </script>
 
 <div class="services-container">
@@ -79,13 +97,14 @@
         <table>
             <thead>
                 <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Tipo</th>
-                <th>Dirección</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Estado</th>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Tipo</th>
+                    <th>Dirección</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
             <tbody>
@@ -99,6 +118,16 @@
                     <td>{formatTime(service.request_time)}</td>
                     <td>
                         {@html getStatusLabel(service.current_status)}
+                    </td>
+
+                        <td>
+                        {#if service.current_status === "assigned"}
+                            <button class="complete-btn" on:click={() => markAsCompleted(service)}>
+                                Completar
+                            </button>
+                        {:else }
+                            <p></p>
+                        {/if}
                     </td>
                 </tr>
                 {/each}
@@ -144,4 +173,35 @@
   tr:hover {
     background: #292942;
   }
+
+  .complete-btn {
+    background: linear-gradient(135deg, var(--success) 0%, #00d4aa 100%);
+    border: none;
+    cursor: pointer;
+    color: var(--bg-dark);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 255, 198, 0.3);
+}
+
+.complete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 255, 198, 0.5);
+}
+
+.complete-btn:active {
+    transform: translateY(0);
+}
+
+.complete-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
 </style>

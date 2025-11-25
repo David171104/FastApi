@@ -182,7 +182,8 @@ class AdminController:
 
             cursor.execute("""
                 UPDATE users
-                SET deleted_at = NOW()
+                SET deleted_at = NOW(),
+                    status = 0
                 WHERE id = %s
             """, (user_id,))
             conn.commit()
@@ -305,4 +306,102 @@ class AdminController:
         finally:
             if conn:
                 conn.close()
+
+ 
+    def obtener_kpis(self):
+        print("🔵 Entrando al endpoint /api/kpis...")
+
+        conn = get_db_connection()
+
+        if conn is None:
+            print("❌ ERROR: No se pudo establecer conexión con la base de datos.")
+            return {"error": "No hay conexión con la base de datos"}
+
+        print("✅ Conexión a MySQL ESTABLECIDA")
+
+        cursor = conn.cursor(dictionary=True)
+
+        def get_count(query):
+            print(f"📌 Ejecutando query: {query}")
+            cursor.execute(query)
+            row = cursor.fetchone()
+            print(f"➡️ Resultado: {row}")
+            return row["total"] if row and row["total"] is not None else 0
+
+        total_users = get_count("SELECT COUNT(*) AS total FROM users")
+        total_services = get_count("SELECT COUNT(*) AS total FROM services")
+        preventivos = get_count("SELECT COUNT(*) AS total FROM services WHERE service_type='Preventivo'")
+        correctivos = get_count("SELECT COUNT(*) AS total FROM services WHERE service_type='Correctivo'")
+        total_roles = get_count("SELECT COUNT(*) AS total FROM roles")
+
+        conn.close()
+
+        resultado = {
+            "users": total_users,
+            "services": total_services,
+            "preventivos": preventivos,
+            "correctivos": correctivos,
+            "roles": total_roles
+        }
+
+        print(f"🟢 KPIs generados correctamente: {resultado}")
+
+        return resultado
+    
+
+    def get_all_reports(self, technician_id=None, status="all", date_from=None, date_to=None):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            query = """
+                SELECT 
+                    sr.id,
+                    sr.technician_id,
+                    u.name AS client_name,
+                    u.last_name AS client_last_name,
+                    ut.name AS technician_name,
+                    ut.last_name AS technician_last_name,
+                    sr.service_description,
+                    sr.created_at,
+                    s.current_status
+                FROM service_report sr
+                INNER JOIN services s ON s.id = sr.service_id
+                INNER JOIN users u ON u.id = s.client_id
+                INNER JOIN users ut 
+                ON ut.id = s.technician_id
+                WHERE sr.deleted_at IS NULL
+            """
+
+            params = []
+
+            # FILTRO por técnico (opcional)
+            if technician_id is not None:
+                query += " AND sr.technician_id = %s"
+                params.append(technician_id)
+
+            # FILTRO por estado (opcional)
+            if status != "all":
+                query += " AND s.current_status = %s"
+                params.append(status)
+
+            # FILTRO por rango de fechas
+            if date_from and date_to:
+                query += " AND DATE(sr.created_at) BETWEEN %s AND %s"
+                params.extend([date_from, date_to])
+
+            query += " ORDER BY sr.id DESC"
+
+            cursor.execute(query, params)
+            return cursor.fetchall()
+
+        except mysql.connector.Error as e:
+            raise HTTPException(status_code=500, detail=f"Error al obtener reportes: {e}")
+
+        finally:
+            if conn:
+                cursor.close()
+                conn.close()
+
 

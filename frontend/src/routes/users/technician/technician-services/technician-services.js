@@ -29,3 +29,32 @@ export async function getTechnicianServices(technicianId) {
     return [];
   }
 }
+
+export async function completeService(serviceId) { 
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    goto("/login");
+    Swal.fire("Sesión expirada", "Por favor inicia sesión nuevamente.", "warning");
+    return;
+  }
+
+  try {
+    const res = await axios.put(`${API_URL}/${serviceId}/complete`,
+      null, // <<------ BODY VACÍO
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }
+      }
+    );
+
+    return res.data.resultado;
+
+  } catch (err) {
+    console.error("Error al completar el servicio:", err);
+    Swal.fire("Error", "No se pudo actualizar el servicio.", "error");
+    return null; 
+  }
+}

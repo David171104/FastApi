@@ -5,7 +5,34 @@ from app.models.users.user_model import User #Model
 from app.models.login.user_login_model import UserLogin
 from fastapi.encoders import jsonable_encoder #Serializable JSON structures
 from fastapi.responses import JSONResponse
-from werkzeug.security import *
+from fastapi.responses import StreamingResponse
+from io import BytesIO
+from fpdf import FPDF
+import os
+from datetime import datetime
+
+
+class PDF(FPDF):
+    def __init__(self, service_id):
+        super().__init__()
+        self.service_id = service_id
+
+    def header(self):
+        logo_path = "app/static/logo.jpeg"
+
+        if os.path.exists(logo_path):
+            self.image(logo_path, x=10, y=8, w=28)
+
+        self.set_font("Arial", "B", 16)
+        self.set_text_color(40, 40, 40)
+        self.cell(0, 10, f"REPORTE DE SERVICIO #{self.service_id}", ln=True, align="C")
+
+        self.ln(5)
+        self.set_draw_color(200, 200, 200)
+        self.line(10, 28, 200, 28)
+        self.ln(10)
+
+
 
 class TechniccianController:
     def update_user(self, user_id: int, user: User):
@@ -80,3 +107,230 @@ class TechniccianController:
         finally:
             if conn:
                 conn.close()
+
+
+    def complete_service(self, service_id: int):
+        conn = None
+        print('entro', service_id)
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                UPDATE services
+                SET current_status = 'completed'
+                WHERE id = %s AND deleted_at IS NULL
+            """, (service_id,))
+            
+            conn.commit()
+
+            return {"resultado": "Servicio completado correctamente"}
+
+        except mysql.connector.Error as e:
+            raise HTTPException(status_code=500, detail=f"Error al completar servicio: {e}")
+
+        finally:
+            if conn:
+                cursor.close()
+                conn.close()
+
+
+    def create_report(self, data: dict):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                INSERT INTO service_report(
+                    service_id, technician_id, service_description, 
+                    service_duration, recommendation, client_rating, 
+                    client_comments, created_at, status
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), 'created')
+            """, (
+                data["service_id"],
+                data["technician_id"],
+                data["service_description"],
+                data["service_duration"],
+                data["recommendation"],
+                data["client_rating"],
+                data["client_comments"]
+            ))
+
+            conn.commit()
+            return {"message": "Reporte registrado correctamente"}
+
+        except mysql.connector.Error as e:
+            raise HTTPException(status_code=500, detail=f"Error al registrar reporte: {e}")
+
+        finally:
+            if conn:
+                cursor.close()
+                conn.close()
+
+
+    def get_reports_by_technician(self, technician_id: int):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            query = """
+                SELECT
+                    sr.id,
+                    sr.service_id,
+                    s.current_status,
+                    sr.technician_id,
+                    
+                    -- Cliente dueño del servicio
+                    u.name AS client_name,
+                    u.last_name AS client_last_name,
+
+                    sr.service_description,
+                    sr.service_duration,
+                    sr.recommendation,
+                    sr.client_rating,
+                    sr.client_comments,
+                    sr.created_at
+
+                FROM service_report sr
+                INNER JOIN services s ON s.id = sr.service_id
+                INNER JOIN users u ON u.id = s.client_id
+                WHERE sr.technician_id = %s
+                AND sr.deleted_at IS NULL
+                ORDER BY sr.id DESC
+            """
+
+            cursor.execute(query, (technician_id,))
+            return cursor.fetchall()
+
+        except mysql.connector.Error as e:
+            raise HTTPException(status_code=500, detail=f"Error al obtener reportes: {e}")
+
+        finally:
+            if conn:
+                cursor.close()
+                conn.close()
+
+
+
+    def generate_pdf(self, report_id: int):
+        conn = None
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            # ==============================
+            # 1. Obtener datos del reporte
+            # ==============================
+            cursor.execute("""
+                SELECT id, service_id, service_description, service_duration,
+                    recommendation, client_rating, client_comments, created_at
+                FROM service_report
+                WHERE id = %s
+            """, (report_id,))
+            report = cursor.fetchone()
+
+            if not report:
+                raise HTTPException(status_code=404, detail="Reporte no encontrado")
+
+            service_id = report["service_id"]
+
+            # ==============================
+            # 2. Buscar cliente en services
+            # ==============================
+            cursor.execute("""
+                SELECT client_id
+                FROM services
+                WHERE id = %s
+            """, (service_id,))
+            service = cursor.fetchone()
+
+            if not service:
+                raise HTTPException(status_code=404, detail="Servicio no encontrado")
+
+            client_id = service["client_id"]
+
+            # ==============================
+            # 3. Buscar nombre del cliente
+            # ==============================
+            cursor.execute("""
+                SELECT CONCAT(name, ' ', last_name) AS client_name
+                FROM users
+                WHERE id = %s
+            """, (client_id,))
+            client = cursor.fetchone()
+
+            client_name = client["client_name"] if client else "No registrado"
+
+            # ==============================
+            # 4. Crear PDF profesional
+            # ==============================
+            pdf = PDF(service_id=service_id)
+            pdf.add_page()
+
+            # Encabezados de tabla (columnas)
+            pdf.set_font("Arial", "B", 11)
+            pdf.set_fill_color(35, 55, 75)
+            pdf.set_text_color(255, 255, 255)
+
+            headers = [
+                "ID", "Cliente", "Descripción", "Duración",
+                "Recomendación", "Calificación", "Comentarios", "Fecha"
+            ]
+
+            col_widths = [8, 28, 30, 20, 31, 25, 30, 20]  
+
+
+            for width, title in zip(col_widths, headers):
+                pdf.cell(width, 10, title, 1, 0, "C", True)
+
+            pdf.ln()
+
+            # ==============================
+            # Fila con valores
+            # ==============================
+            pdf.set_font("Arial", "", 10)
+            pdf.set_text_color(30, 30, 30)
+            fecha_formateada = report["created_at"].strftime("%d/%m/%Y")
+
+            values = [
+                str(service_id),
+                client_name,
+                report["service_description"],
+                report["service_duration"],
+                report["recommendation"],
+                str(report["client_rating"]),
+                report["client_comments"],
+                fecha_formateada
+            ]
+
+            fill = False
+            pdf.set_fill_color(245, 245, 245)
+
+            for width, value in zip(col_widths, values):
+                pdf.cell(width, 10, str(value), 1, 0, "L", fill)
+
+            pdf.ln()
+
+            # Footer
+            pdf.ln(10)
+            pdf.set_font("Arial", "I", 10)
+            pdf.set_text_color(100, 100, 100)
+            pdf.cell(0, 10, f"Generado el {datetime.now().strftime('%Y-%m-%d %H:%M')}", 0, 0, "R")
+
+            pdf_bytes = bytes(pdf.output(dest="S"))
+
+            return StreamingResponse(
+                BytesIO(pdf_bytes),
+                media_type="application/pdf",
+                headers={"Content-Disposition": f"attachment; filename=reporte_{report_id}.pdf"}
+            )
+
+        finally:
+            if conn:
+                conn.close()
+
+
+
