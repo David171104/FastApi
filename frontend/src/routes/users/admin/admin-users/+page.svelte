@@ -16,6 +16,10 @@
     border-radius: 12px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
     color: #cfcfe6;
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* 👈 Evita que algo salga */
   }
 
   h2 {
@@ -30,6 +34,16 @@
     border-collapse: collapse;
     border-radius: 10px;
     overflow: hidden;
+    table-layout: auto; /* 👈 Deja que la tabla distribuya bien */
+  }
+
+  .user-table th,
+  .user-table td {
+    padding: 12px;
+    text-align: left;
+    white-space: normal; /* 👈 Permite varias líneas */
+    word-wrap: break-word; /* 👈 Evita romper el layout */
+    max-width: 200px; /* 👈 Limita cada columna */
   }
 
   thead {
@@ -133,7 +147,7 @@
 
   input, select {
     width: 100%;
-    padding: 10px;
+    padding: 10px 0px;
     border-radius: 6px;
     border: none;
     margin-top: 5px;
