@@ -113,7 +113,7 @@
 
   input, select {
     width: 100%;
-    padding: 10px;
+    padding: 10px 0px;
     border-radius: 6px;
     border: none;
     margin-top: 5px;
@@ -203,7 +203,7 @@
 
   input, select {
     width: 100%;
-    padding: 10px;
+    padding: 10px 0px;
     border-radius: 8px;
     border: 1px solid #2d2d45;
     background: #292942;
@@ -311,7 +311,7 @@
   async function handleDelete(serviceId) {
     const confirm = await Swal.fire({
       title: '¿Eliminar servicio?',
-      text: 'Esta acción marcará el servicio como eliminado.',
+      text: 'Esta acción cancelara el servicio programado.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',

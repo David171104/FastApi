@@ -161,7 +161,7 @@
 
   input {
     width: 100%;
-    padding: 0.7rem 0.8rem;
+    padding: 0.75rem;
     background: #2b2b45;
     border: 1px solid #3a3a58;
     border-radius: 0.6rem;

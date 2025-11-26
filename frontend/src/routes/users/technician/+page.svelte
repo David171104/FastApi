@@ -1,20 +1,112 @@
 <script>
-	let stats = [
-		{ label: 'Servicios completados', value: 48, icon: 'fa-solid fa-wrench', color: '#06b6d4' },
-		{ label: 'Pendientes', value: 3, icon: 'fa-solid fa-clock', color: '#facc15' },
-		{ label: 'Clientes atendidos', value: 27, icon: 'fa-solid fa-users', color: '#3b82f6' },
-		{ label: 'Calificación promedio', value: '4.8', icon: 'fa-solid fa-star', color: '#fbbf24' },
-	];
+	import { onMount } from "svelte";
+    import Swal from 'sweetalert2';
+	import { getStats, getDailyServices, getMonthlyStats } from "./technician.js";
+	import { getStatusLabel, formatDate, formatTime } from '$lib/helpers/constants.js';
 
-	let services = [
-		{ id: 1, cliente: 'Carlos López', servicio: 'Mantenimiento Split 12000 BTU', estado: 'En progreso' },
-		{ id: 2, cliente: 'María Pérez', servicio: 'Instalación MiniSplit', estado: 'Pendiente' },
-		{ id: 3, cliente: 'TecnoOficinas S.A.', servicio: 'Revisión general', estado: 'Completado' },
-	];
+	let stats = [];
+	let services = [];
+	let months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+	let dataGraphics = [];
 
-	let months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-	let data = [20, 30, 45, 50, 65, 70, 80, 60, 75, 90, 85, 95];
+	onMount(async () => {
+
+		const user = JSON.parse(localStorage.getItem("user"));
+		const data = await getStats(user.id);
+		services = await getDailyServices(user.id);
+
+		stats = [
+			{ label: 'Servicios completados', value: data.completed, icon: 'fa-solid fa-wrench', color: '#06b6d4' },
+			{ label: 'Pendientes', value: data.pending, icon: 'fa-solid fa-clock', color: '#facc15' },
+			{ label: 'Clientes atendidos', value: data.clients, icon: 'fa-solid fa-users', color: '#3b82f6' },
+			{ label: 'Calificación promedio', value: data.avg_rating, icon: 'fa-solid fa-star', color: '#fbbf24' },
+		];
+
+		dataGraphics = await getMonthlyStats(user.id);
+		console.log('dataGraphics', dataGraphics);
+	});
+
+	
 </script>
+
+
+
+<div class="dashboard">
+	<header>
+		<div>
+			<h1 class="text-3xl font-bold" style="color: #06b6d4;">Panel del Técnico</h1>
+			<p class="text-gray-400 text-sm">Resumen de actividades y rendimiento general</p>
+		</div>
+		
+	</header>
+
+	<section class="stats">
+		{#each stats as stat}
+			<div class="card">
+				<div class="flex justify-between items-center">
+					<div>
+						<p class="text-gray-400 text-sm">{stat.label}</p>
+						<p class="text-3xl font-bold mt-2" style="color:{stat.color}">{stat.value}</p>
+					</div>
+					<i class={stat.icon} style="color:{stat.color}"></i>
+				</div>
+			</div>
+		{/each}
+	</section>
+
+	<section class="graph">
+		<h2 class="text-xl font-semibold mb-4" style="color: #06b6d4;">
+			<i class="fa-solid fa-chart-column"></i> Rendimiento Mensual
+		</h2>
+
+		<div class="graph-bars">
+			{#each dataGraphics as d}
+				<div class="bar" style="height: {Math.max(10, d * 12)}px;">
+					<div class="tooltip">{d}
+
+					</div>
+				</div>
+			{/each}
+		</div>
+
+		<div class="months">
+			{#each months as m}
+				<span>{m}</span>
+			{/each}
+		</div>
+	</section>
+
+	<section class="bg-[#151625] rounded-2xl p-6">
+		<h2 class="text-xl font-semibold mb-4" style="color:#06b6d4;">
+			<i class="fa-solid fa-list-check"></i> Servicios del Día
+		</h2>
+
+		<div class="overflow-x-auto">
+			<table>
+				<thead>
+					<tr>
+						<th>Cliente</th>
+						<th>Estado</th>
+						<th>Hora</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					{#each services as s}
+						<tr>
+							<td>{s.client_name} {s.client_last_name}</td>
+							<td>
+								{@html getStatusLabel(s.current_status)}
+							</td>
+							<td>{s.request_time}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</section>
+</div>
+
 
 <style>
 	.dashboard {
@@ -80,6 +172,8 @@
 	}
 
 	.bar {
+		position: relative;
+
 		flex: 1;
 		background: linear-gradient(180deg, #06b6d4, #0891b2);
 		border-radius: 0.3rem;
@@ -141,77 +235,25 @@
 		background: rgba(59, 130, 246, 0.2);
 		color: #3b82f6;
 	}
+
+	.tooltip {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #06b6d4;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    color: #000;
+    font-weight: 600;
+    border-radius: 5px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+    white-space: nowrap;
+}
+
+.bar:hover .tooltip {
+    opacity: 1;
+}
 </style>
-
-<div class="dashboard">
-	<header>
-		<div>
-			<h1 class="text-3xl font-bold" style="color: #06b6d4;">Panel del Técnico</h1>
-			<p class="text-gray-400 text-sm">Resumen de actividades y rendimiento general</p>
-		</div>
-		
-	</header>
-
-	<section class="stats">
-		{#each stats as stat}
-			<div class="card">
-				<div class="flex justify-between items-center">
-					<div>
-						<p class="text-gray-400 text-sm">{stat.label}</p>
-						<p class="text-3xl font-bold mt-2" style="color:{stat.color}">{stat.value}</p>
-					</div>
-					<i class={stat.icon} style="color:{stat.color}"></i>
-				</div>
-			</div>
-		{/each}
-	</section>
-
-	<section class="graph">
-		<h2 class="text-xl font-semibold mb-4" style="color: #06b6d4;">
-			<i class="fa-solid fa-chart-column"></i> Rendimiento Mensual
-		</h2>
-
-		<div class="graph-bars">
-			{#each data as d}
-				<div class="bar" style="height: {d * 1.8}px;"></div>
-			{/each}
-		</div>
-		<div class="months">
-			{#each months as m}
-				<span>{m}</span>
-			{/each}
-		</div>
-	</section>
-
-	<section class="bg-[#151625] rounded-2xl p-6">
-		<h2 class="text-xl font-semibold mb-4" style="color:#06b6d4;">
-			<i class="fa-solid fa-list-check"></i> Servicios del Día
-		</h2>
-
-		<div class="overflow-x-auto">
-			<table>
-				<thead>
-					<tr>
-						<th>Cliente</th>
-						<th>Servicio</th>
-						<th>Estado</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each services as s}
-						<tr>
-							<td>{s.cliente}</td>
-							<td>{s.servicio}</td>
-							<td>
-								<span
-									class="estado {s.estado === 'Completado' ? 'completado' : s.estado === 'Pendiente' ? 'pendiente' : 'progreso'}"
-									>{s.estado}</span
-								>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	</section>
-</div>
