@@ -1,321 +1,558 @@
 <section class="hero">
-  <div class="overlay">
-    <h1>Climatización Total</h1>
-    <p>
-      Innovación, eficiencia y tecnología en sistemas de aire acondicionado.  
-      Mantenemos tu ambiente perfecto los 365 días del año.
+  <div class="hero-overlay">
+    <div class="page-container hero-content">
+      <div class="hero-text">
+        <h1>Climatización Total</h1>
+        <p>
+          Innovación, eficiencia y tecnología en sistemas de aire acondicionado.
+          Monitorea y optimiza tus equipos los 365 días del año.
+        </p>
+
+        <div class="hero-cta">
+          <a href="#servicios" class="btn-primary">Ver servicios</a>
+          <a href="/login" class="btn-outline">Ir al panel</a>
+        </div>
+
+        <div class="hero-meta">
+          Monitoreo en tiempo real · Alertas inteligentes · Reportes de consumo
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about section-dark" id="servicios">
+  <div class="page-container">
+    <h2 class="section-title">¿Quiénes Somos?</h2>
+    <p class="section-text">
+      Somos especialistas en soluciones integrales de climatización con enfoque en
+      <strong>tecnología IoT y eficiencia energética</strong>. Ofrecemos instalación,
+      mantenimiento y monitoreo digital de aires acondicionados, con estándares de
+      calidad orientados a la industria moderna.
     </p>
   </div>
 </section>
 
-<section class="about">
-  <h2>¿Quiénes Somos?</h2>
-  <p>
-    Somos especialistas en soluciones integrales de climatización.  
-    Ofrecemos instalación, mantenimiento y reparación de aires acondicionados con altos estándares
-    de calidad y tecnología de punta.
-  </p>
-</section>
-
-<section class="stats">
-  <div class="stat">
-    <h3>+10</h3>
-    <p>Años de experiencia</p>
-  </div>
-  <div class="stat">
-    <h3>+500</h3>
-    <p>Clientes satisfechos</p>
-  </div>
-  <div class="stat">
-    <h3>+1000</h3>
-    <p>Equipos instalados</p>
-  </div>
-</section>
-
-<section class="tech">
-  <h2>Tecnología y Rendimiento</h2>
-  <p>
-    Implementamos soluciones que reducen el consumo energético hasta un 30% gracias a la eficiencia
-    de nuestros sistemas y procesos de mantenimiento optimizados.
-  </p>
-
-  <div class="cards">
-    <div class="card">
-      <h3>Control Inteligente</h3>
-      <p>Monitoreo y ajustes automáticos para mantener temperaturas ideales todo el tiempo.</p>
+<section class="stats section-alt">
+  <div class="page-container stats-grid">
+    <div class="stat">
+      <h3>+10</h3>
+      <p>Años de experiencia</p>
     </div>
-    <div class="card">
-      <h3>Eficiencia Energética</h3>
-      <p>Equipos diseñados para ofrecer el máximo rendimiento con el menor consumo posible.</p>
+    <div class="stat">
+      <h3>+500</h3>
+      <p>Clientes satisfechos</p>
     </div>
-    <div class="card">
-      <h3>Diagnóstico Avanzado</h3>
-      <p>Evaluaciones precisas mediante sistemas digitales de verificación térmica y flujo de aire.</p>
+    <div class="stat">
+      <h3>+1000</h3>
+      <p>Equipos instalados</p>
     </div>
   </div>
 </section>
 
-<section class="team">
-  <h2>Nuestro Equipo</h2>
-  <div class="members">
-    <div class="member">
-      <div class="avatar"></div>
-      <h3>David Altamar</h3>
-      <p>Técnico en Refrigeración</p>
-    </div>
-    <div class="member">
-      <div class="avatar"></div>
-      <h3>Jhon Cantillo</h3>
-      <p>Ingeniera en Climatización</p>
-    </div>
-    <div class="member">
-      <div class="avatar"></div>
-      <h3>Jonathan Soto</h3>
-      <p>Supervisor de Mantenimiento</p>
+<section class="tech section-dark">
+  <div class="page-container">
+    <h2 class="section-title">Tecnología y Rendimiento</h2>
+    <p class="section-text">
+      Implementamos soluciones que reducen el consumo energético hasta un
+      <strong>30%</strong> gracias a sensores inteligentes, análisis de datos y un
+      mantenimiento predictivo basado en métricas reales de operación.
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Control Inteligente</h3>
+        <p>
+          Monitoreo, alertas y ajustes óptimos para mantener tus ambientes dentro
+          del rango de confort definido.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Eficiencia Energética</h3>
+        <p>
+          Estrategias y equipos diseñados para ofrecer el máximo rendimiento con el
+          menor consumo posible.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Diagnóstico Avanzado</h3>
+        <p>
+          Evaluaciones precisas mediante sistemas digitales para verificar
+          temperatura, humedad, flujo de aire y consumo eléctrico.
+        </p>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="reviews">
-  <h2>Lo Que Dicen Nuestros Clientes</h2>
-  <div class="review-cards">
-    <div class="review">
-      <p>"Excelente servicio, mi aire quedó como nuevo y en muy poco tiempo."</p>
-      <h4>- Andrés Martínez</h4>
-    </div>
-    <div class="review">
-      <p>"Muy profesionales, confiables y siempre atentos a cada detalle."</p>
-      <h4>- Laura Ríos</h4>
-    </div>
-    <div class="review">
-      <p>"Sin duda los mejores en mantenimiento de sistemas industriales."</p>
-      <h4>- Ricardo Torres</h4>
+<section class="team section-alt">
+  <div class="page-container">
+    <h2 class="section-title">Nuestro Equipo</h2>
+    <div class="members">
+      <div class="member">
+        <div class="avatar"></div>
+        <h3>David Altamar</h3>
+        <p>Técnico en Refrigeración y Climatización</p>
+      </div>
+      <div class="member">
+        <div class="avatar"></div>
+        <h3>Bryan Cantillo</h3>
+        <p>Especialista IoT y Sensores</p>
+      </div>
+      <div class="member">
+        <div class="avatar"></div>
+        <h3>Jonathan Soto</h3>
+        <p>Supervisor de Mantenimiento y Monitoreo</p>
+      </div>
     </div>
   </div>
 </section>
 
+<section class="reviews section-dark">
+  <div class="page-container">
+    <h2 class="section-title">Lo Que Dicen Nuestros Clientes</h2>
+    <div class="review-cards">
+      <div class="review">
+        <p>
+          “Excelente servicio, mi aire quedó como nuevo y el monitoreo ayuda a
+          saber cuándo darle mantenimiento.”
+        </p>
+        <h4>- Andrés Martínez</h4>
+      </div>
+      <div class="review">
+        <p>
+          “Muy profesionales y organizados. La plataforma nos permite ver el
+          estado de todos los equipos en un solo lugar.”
+        </p>
+        <h4>- Laura Ríos</h4>
+      </div>
+      <div class="review">
+        <p>
+          “Ideal para sistemas industriales, ahora tenemos control real del
+          consumo y de las fallas criticas.”
+        </p>
+        <h4>- Ricardo Torres</h4>
+      </div>
+    </div>
+  </div>
+</section>
 
+<section class="gallery section-alt">
+  <div class="page-container">
+    <h2 class="section-title">Proyectos Recientes</h2>
+    <div class="images">
+      <div class="img img-1"></div>
+      <div class="img img-2"></div>
+      <div class="img img-3"></div>
+    </div>
+  </div>
+</section>
 
+<section class="footer-banner">
+  <div class="page-container footer-inner">
+    <div>
+      <h2>¿Listo para optimizar tus sistemas de climatización?</h2>
+      <p>
+        Agenda una visita técnica o solicita acceso a la plataforma de monitoreo
+        para empezar a ahorrar energía desde hoy.
+      </p>
+    </div>
+    <a href="/contacto" class="btn-footer">Hablar con un asesor</a>
+  </div>
+</section>
 
 <style>
-  /* General */
-  section {
-    padding: 5rem 2rem;
+  :root {
+    --bg-main: #0f172a;
+    --bg-dark: #1c1b29;
+    --bg-alt: #24233a;
+    --accent: #00d4b3;
+    --text-main: #e5e7eb;
+    --text-muted: #9ca3af;
+    --radius-card: 14px;
   }
 
-  h1, h2, h3, h4 {
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+  }
+
+  section {
+    padding: 4.5rem 1.5rem;
+  }
+
+  .page-container {
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
     margin: 0;
   }
 
   p {
     line-height: 1.6;
+    margin: 0;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 2rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .section-text {
+    max-width: 720px;
+    margin: 0.5rem auto 0;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  .section-dark {
+    background-color: var(--bg-dark);
+  }
+
+  .section-alt {
+    background-color: var(--bg-alt);
   }
 
   /* Hero */
   .hero {
-    height: 90vh;
-    background: url('https://images.unsplash.com/photo-1615874959474-d60991e03f7e?auto=format&fit=crop&w=1400&q=80')
+    height: 85vh;
+    min-height: 520px;
+    background: url("https://images.unsplash.com/photo-1615874959474-d60991e03f7e?auto=format&fit=crop&w=1400&q=80")
       center/cover no-repeat;
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     color: white;
   }
 
-  .overlay {
-    background: rgba(28, 27, 41, 0.8);
-    text-align: center;
-    padding: 3rem;
-    border-radius: 15px;
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left, #0b1220cc 0, #020617ee 50%);
+    display: flex;
+    align-items: center;
   }
 
-  .overlay h1 {
-    font-size: 3.5rem;
-    color: #00d4b3;
+  .hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .hero-text {
+    max-width: 560px;
+  }
+
+  .hero-text h1 {
+    font-size: clamp(2.4rem, 3vw + 1rem, 3.2rem);
+    color: var(--accent);
     margin-bottom: 1rem;
   }
 
-  .overlay p {
-    max-width: 700px;
-    margin: auto;
-    color: #ccc;
+  .hero-text p {
+    font-size: 1rem;
+    color: #e5e7f7;
+    margin-bottom: 1.8rem;
   }
 
-  /* About */
-  .about {
-    background-color: #1c1b29;
-    color: #ddd;
-    text-align: center;
-  }
-
-  .about h2 {
-    color: #00d4b3;
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
     margin-bottom: 1rem;
+  }
+
+  .btn-primary,
+  .btn-outline,
+  .btn-footer {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #020617;
+    box-shadow: 0 12px 25px rgba(0, 212, 179, 0.3);
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 16px 30px rgba(0, 212, 179, 0.35);
+  }
+
+  .btn-outline {
+    border: 1px solid rgba(148, 163, 184, 0.7);
+    color: #e5e7eb;
+    background: transparent;
+  }
+
+  .btn-outline:hover {
+    background: rgba(15, 23, 42, 0.7);
+  }
+
+  .hero-meta {
+    font-size: 0.85rem;
+    color: #cbd5f5;
+    margin-top: 0.3rem;
   }
 
   /* Stats */
-  .stats {
+  .stats-grid {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
-    background-color: #24233a;
-    color: white;
+    justify-content: center;
+    gap: 1.8rem;
     text-align: center;
   }
 
   .stat {
-    margin: 2rem;
+    background-color: #1b1b2f;
+    border-radius: var(--radius-card);
+    padding: 1.6rem 2rem;
+    min-width: 180px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
   }
 
   .stat h3 {
-    color: #00d4b3;
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    color: var(--accent);
+    font-size: 2.2rem;
+    margin-bottom: 0.4rem;
   }
 
-  /* Tech */
-  .tech {
-    background-color: #1c1b29;
-    text-align: center;
-    color: #ddd;
+  .stat p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
   }
 
-  .tech h2 {
-    color: #00d4b3;
-    margin-bottom: 1rem;
-  }
-
+  /* Tech cards */
   .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
-    margin-top: 3rem;
+    margin-top: 2.5rem;
   }
 
   .card {
-    background-color: #24233a;
-    border-radius: 12px;
+    background-color: #1b1b2f;
+    border-radius: var(--radius-card);
     padding: 2rem;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    text-align: left;
   }
 
   .card h3 {
-    color: #00d4b3;
-    margin-bottom: 1rem;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
   }
 
   .card p {
-    color: #ccc;
+    color: #d1d5db;
+    font-size: 0.95rem;
   }
 
   /* Team */
-  .team {
-    background-color: #24233a;
-    text-align: center;
-  }
-
-  .team h2 {
-    color: #00d4b3;
-    margin-bottom: 2rem;
-  }
-
-  .members {
+  .team .members {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 2rem;
+    margin-top: 2rem;
   }
 
   .member {
-    background-color: #1c1b29;
+    background-color: #1b1b2f;
     padding: 2rem;
-    border-radius: 12px;
+    border-radius: var(--radius-card);
     width: 250px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
   }
 
   .avatar {
-    background: linear-gradient(135deg, #00d4b3, #007b7b);
+    background: linear-gradient(135deg, var(--accent), #007b7b);
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    margin: auto auto 1rem;
+    margin: 0 auto 1rem;
+  }
+
+  .member h3 {
+    margin-bottom: 0.3rem;
+  }
+
+  .member p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
   }
 
   /* Reviews */
-  .reviews {
-    background-color: #1c1b29;
-    color: #ddd;
-    text-align: center;
-  }
-
-  .reviews h2 {
-    color: #00d4b3;
-    margin-bottom: 2rem;
-  }
-
   .review-cards {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 2rem;
+    margin-top: 2rem;
   }
 
   .review {
-    background-color: #24233a;
-    border-radius: 12px;
+    background-color: #1b1b2f;
+    border-radius: var(--radius-card);
     padding: 2rem;
     width: 300px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  }
+
+  .review p {
+    color: #e5e7eb;
+    font-size: 0.95rem;
   }
 
   .review h4 {
-    color: #00d4b3;
+    color: var(--accent);
     margin-top: 1rem;
+    font-size: 0.9rem;
   }
 
   /* Gallery */
-  .gallery {
-    background-color: #24233a;
-    text-align: center;
-  }
-
-  .gallery h2 {
-    color: #00d4b3;
-    margin-bottom: 2rem;
-  }
-
-  .images {
+  .gallery .images {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1.5rem;
-    max-width: 1000px;
-    margin: auto;
+    margin-top: 2.2rem;
   }
 
   .img {
-    background: url('https://images.unsplash.com/photo-1604328698692-3a3a5b2e8b26?auto=format&fit=crop&w=800&q=80')
-      center/cover no-repeat;
-    border-radius: 12px;
+    border-radius: var(--radius-card);
     height: 200px;
-    transition: transform 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    transform: translateY(0);
+    transition: transform 0.25s ease;
+  }
+
+  .img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #020617aa, transparent 60%);
   }
 
   .img:hover {
-    transform: scale(1.03);
+    transform: translateY(-4px);
+  }
+
+  .img-1 {
+    background: url("https://images.unsplash.com/photo-1604328698692-3a3a5b2e8b26?auto=format&fit=crop&w=800&q=80")
+      center/cover no-repeat;
+  }
+
+  .img-2 {
+    background: url("https://images.unsplash.com/photo-1599785209796-88630776a8a1?auto=format&fit=crop&w=800&q=80")
+      center/cover no-repeat;
+  }
+
+  .img-3 {
+    background: url("https://images.unsplash.com/photo-1590756254933-7760d81faba6?auto=format&fit=crop&w=800&q=80")
+      center/cover no-repeat;
   }
 
   /* Footer banner */
   .footer-banner {
     background: linear-gradient(135deg, #00d4b3, #007b7b);
-    text-align: center;
     color: #fff;
-    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .footer-banner h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-banner p {
+    font-size: 0.95rem;
+    max-width: 520px;
+  }
+
+  .btn-footer {
+    background: #0f172a;
+    color: #e5e7eb;
+    border-radius: 999px;
+    padding: 0.8rem 1.6rem;
+    font-weight: 600;
+  }
+
+  .btn-footer:hover {
+    background: #020617;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .hero {
+      height: auto;
+      min-height: 480px;
+    }
+
+    .hero-overlay {
+      position: relative;
+      padding: 4rem 1.5rem;
+    }
+
+    .hero-content {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .hero-text {
+      max-width: 100%;
+    }
+
+    .hero-cta {
+      justify-content: center;
+    }
+
+    .footer-inner {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 600px) {
+    section {
+      padding: 3.2rem 1.4rem;
+    }
+
+    .stat {
+      width: 100%;
+    }
+
+    .member,
+    .review {
+      width: 100%;
+      max-width: 360px;
+    }
   }
 </style>
