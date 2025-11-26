@@ -92,7 +92,7 @@ def get_db():
         db.close()
 
 
-COLOMBIA_TZ = ZoneInfo("America/Bogota")
+# COLOMBIA_TZ = ZoneInfo("America/Bogota")
 
 
 # ============================================================
@@ -192,6 +192,3 @@ def ultima_lectura(db: Session = Depends(get_db)):
     return ultima
 
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8002)

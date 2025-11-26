@@ -21,7 +21,7 @@ timeout /t 3 > nul
 echo ===============================
 echo Iniciando servidor IoT ...
 echo ===============================
-start cmd /k "cd iot && fastapi dev app.py"
+start cmd /k "cd iot && uvicorn app:app --reload --host 0.0.0.0 --port 8002"
 
 echo ===============================
 echo Ambos servidores fueron iniciados.

@@ -49,35 +49,27 @@
 </div>
 
 <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
+  :global(body) {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: #f5f7fa;
+    color: #333;
+  }
 
-    body {
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #0f172a, #020617);
-      color: #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-    }
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    height: 100vh;
+    box-sizing: border-box;
+  }
 
-    .container {
-      width: 100%;
-      max-width: 1200px;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 18px;
-      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 1.5rem 1.75rem 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+  .main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
 
     .header {
       display: flex;
