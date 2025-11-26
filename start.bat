@@ -21,7 +21,7 @@ timeout /t 3 > nul
 echo ===============================
 echo Iniciando servidor IoT ...
 echo ===============================
-start cmd /k "cd iot fastapi dev app.py"
+start cmd /k "cd iot && fastapi dev app.py"
 
 echo ===============================
 echo Ambos servidores fueron iniciados.
