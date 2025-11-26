@@ -15,7 +15,7 @@ import datetime
 
 # Ajusta usuario/clave/host si es necesario
 # Formato: mysql+mysqlconnector://USUARIO:CLAVE@HOST/BD
-DATABASE_URL = "mysql+mysqlconnector://root:@localhost/iot_esp32"
+DATABASE_URL = "mysql+mysqlconnector://root:@localhost/fastapi_bd"
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
