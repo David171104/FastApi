@@ -3,107 +3,58 @@
 <script>
   import { onMount } from "svelte";
 
-  console.log("App.svelte CARGÓ");
-
-  let kpis = {
-    users: 0,
-    services: 0,
-    preventivos: 0,
-    correctivos: 0,
-    roles: 0
-  };
-
-  let error = "";
-  let loading = true;
-
   let powerbiUrl =
-    "https://app.powerbi.com/view?r=eyJrIjoiMjRiNTk0ZWEtZjkzMS00ZTRiLTg3NGUtNWZhYjY0ZjFhYTY2IiwidCI6IjFlOWFhYmU4LTY3ZjgtNGYxYy1hMzI5LWE3NTRlOTI0OTlhZSIsImMiOjR9";
+    "https://app.powerbi.com/reportEmbed?reportId=97816d51-2d3a-47b7-891d-d9224b9ca6bf&autoAuth=true&ctid=1e9aabe8-67f8-4f1c-a329-a754e92499ae";
 
-  onMount(async () => {
-    console.log("onMount ejecutado");
+  let pbiFrame;
 
-    try {
-      const res = await fetch("http://localhost:8000/api/kpis");
-
-      console.log("Respuesta recibida:", res.status);
-
-      if (!res.ok) throw new Error("Error al obtener KPIs");
-
-      const data = await res.json();
-
-      console.log("KPIs cargadas:", data);
-
-      kpis = data;
-    } catch (err) {
-      console.error("Error en KPIs:", err);
-      error = "Error al cargar KPIs";
-    } finally {
-      loading = false;
-    }
+  onMount(() => {
+    // Si necesitas lógica al montar, aquí va
   });
+
+  function refreshDashboard() {
+    pbiFrame.src = pbiFrame.src; // recarga correcta en Svelte
+  }
 </script>
 
-{#if loading}
-  <p>Cargando KPIs...</p>
-{:else if error}
-  <p style="color:red;">{error}</p>
-{/if}
-
-
-<div class="dashboard">
-  <div class="main">
-    <div class="kpi-container">
-      <div class="kpi">
-        <div class="kpi-value">{kpis.users}</div>
-        <div class="kpi-label">Usuarios Totales</div>
-      </div>
-
-      <div class="kpi">
-        <div class="kpi-value">{kpis.services}</div>
-        <div class="kpi-label">Servicios Totales</div>
-      </div>
-
-      <div class="kpi">
-        <div class="kpi-value">{kpis.preventivos}</div>
-        <div class="kpi-label">Preventivos</div>
-      </div>
-
-      <div class="kpi">
-        <div class="kpi-value">{kpis.correctivos}</div>
-        <div class="kpi-label">Correctivos</div>
-      </div>
-
-      <div class="kpi">
-        <div class="kpi-value">{kpis.roles}</div>
-        <div class="kpi-label">Roles Totales</div>
-      </div>
+<div class="container">
+  <div class="header">
+    <div class="title-block">
+      <h1>MONITOREO AMBIENTAL IoT ESP32 – DASHBOARD EN TIEMPO REAL</h1>
+      <p>Datos provenientes del ESP32 → FastAPI → MySQL → Power BI</p>
     </div>
 
-    <div class="charts">
-      <div class="chart">Gráfico 1</div>
-      <div class="chart">Gráfico 2</div>
-      <div class="chart">Gráfico 3</div>
-      <div class="chart">Gráfico 4</div>
-      <div class="chart">Gráfico 5</div>
-      <div class="chart">
-        <iframe title="Power BI" src={powerbiUrl} allowfullscreen="true"></iframe>
-      </div>
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      Actualizando desde Power BI
     </div>
   </div>
 
-  <div class="filter">
-    <h3>Filtro</h3>
-    <label>Seleccionar periodo:</label>
-    <select>
-      <option>Última semana</option>
-      <option>Último mes</option>
-      <option>Último trimestre</option>
-      <option>Último año</option>
-    </select>
+  <div class="frame-wrapper">
+    <iframe
+      bind:this={pbiFrame}
+      title="Dashboard IoT ESP32"
+      src={powerbiUrl}
+      frameborder="0"
+      allowfullscreen
+    ></iframe>
+  </div>
+
+  <div class="actions">
+    <button class="btn-refresh" on:click={refreshDashboard}>
+      <span class="icon">⟳</span>
+      Actualizar dashboard
+    </button>
   </div>
 </div>
 
 <style>
+  :global(body) {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: #f5f7fa;
+    color: #333;
+  }
 
   .dashboard {
     display: grid;
@@ -120,76 +71,101 @@
     gap: 1rem;
   }
 
-  /* KPIs */
-  .kpi-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-  }
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
 
-  .kpi {
-    background: white;
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
+    .title-block h1 {
+      font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #38bdf8;
+    }
 
-  .kpi-value {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #004aad;
-  }
+    .title-block p {
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
 
-  .kpi-label {
-    font-size: 0.9rem;
-    color: #555;
-  }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      font-size: 0.75rem;
+      color: #bbf7d0;
+      white-space: nowrap;
+    }
 
-  /* Charts grid */
-  .charts {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 1rem;
-    flex: 1;
-  }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+    }
 
-  .chart {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #888;
-    font-size: 0.9rem;
-  }
+    .frame-wrapper {
+      position: relative;
+      width: 100%;
+      /* Relación aproximada 16:9 */
+      padding-top: 56.25%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: radial-gradient(circle at top left, #111827, #020617);
+    }
 
-  /* Filtro lateral */
-  .filter {
-    background: white;
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
+    .frame-wrapper iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
 
-  .filter h3 {
-    margin-bottom: 1rem;
-    color: #004aad;
-  }
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
 
-  select {
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
+    .btn-refresh {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 0.45rem 0.95rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.4);
+      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+    }
 
-  iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 10px;
-  }
-</style>
+    .btn-refresh:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(56, 189, 248, 0.55);
+    }
+
+    .btn-refresh span.icon {
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 1.1rem 1.1rem 1.6rem;
+      }
+    }
+  </style>
