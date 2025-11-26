@@ -48,7 +48,9 @@ class LoginController:
                 {
                     "id": userData["id"], 
                     "role_id": userData["role_id"], 
-                    "name": userData["name"], 
+                    "name": userData["name"],
+                    "last_name": userData["last_name"],
+                    "document_number": userData["document_number"], 
                     "email": userData["email"]
                 }
             })

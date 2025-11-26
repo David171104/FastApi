@@ -36,7 +36,7 @@
 
   function editProfile() {
     closeDropdown();
-    goto('/users/profile/edit');
+    goto('/users');
   }
 
   function logout() {
@@ -89,7 +89,7 @@
     <div class="user-menu">
       <button class="user-button" on:click={toggleDropdown}>
         <span class="user-icon">   <i class="fa-solid fa-user"></i></span>
-        <span class="user-name">{user?.name || 'Usuario'}</span>
+        <span class="user-name">{user?.name  || 'Usuario'} {user?.last_name  || ''}</span>
         <span class="arrow" class:open={dropdownOpen}>▼</span>
       </button>
       
