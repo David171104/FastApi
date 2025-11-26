@@ -104,12 +104,6 @@
 </div>
 
 <style>
-  :global(body) {
-    margin: 0;
-    font-family: "Segoe UI", sans-serif;
-    background: #f5f7fa;
-    color: #333;
-  }
 
   .dashboard {
     display: grid;

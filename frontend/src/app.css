@@ -2,11 +2,10 @@
   --primary-color: #1e1e2f;
 }
 
-:global(body){
+  :global(body){
     background-color: #1e1e2f;
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    color: #cfcfe6;
 }
 
   .table-container {
