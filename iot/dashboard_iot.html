@@ -1,54 +1,11 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard IoT ESP32 – Power BI Tiempo Real</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-
-<script>
-  import { onMount } from "svelte";
-
-  let powerbiUrl =
-    "https://app.powerbi.com/reportEmbed?reportId=97816d51-2d3a-47b7-891d-d9224b9ca6bf&autoAuth=true&ctid=1e9aabe8-67f8-4f1c-a329-a754e92499ae";
-
-  let pbiFrame;
-
-  onMount(() => {
-    // Si necesitas lógica al montar, aquí va
-  });
-
-  function refreshDashboard() {
-    pbiFrame.src = pbiFrame.src; // recarga correcta en Svelte
-  }
-</script>
-
-<div class="container">
-  <div class="header">
-    <div class="title-block">
-      <h1>MONITOREO AMBIENTAL IoT ESP32 – DASHBOARD EN TIEMPO REAL</h1>
-      <p>Datos provenientes del ESP32 → FastAPI → MySQL → Power BI</p>
-    </div>
-
-    <div class="status-pill">
-      <div class="status-dot"></div>
-      Actualizando desde Power BI
-    </div>
-  </div>
-
-  <div class="frame-wrapper">
-    <iframe
-      bind:this={pbiFrame}
-      title="Dashboard IoT ESP32"
-      src={powerbiUrl}
-      frameborder="0"
-      allowfullscreen
-    ></iframe>
-  </div>
-
-  <div class="actions">
-    <button class="btn-refresh" on:click={refreshDashboard}>
-      <span class="icon">⟳</span>
-      Actualizar dashboard
-    </button>
-  </div>
-</div>
-
-<style>
+  <style>
     * {
       box-sizing: border-box;
       margin: 0;
@@ -177,3 +134,37 @@
       }
     }
   </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="title-block">
+        <h1>MONITOREO AMBIENTAL IoT ESP32 – DASHBOARD EN TIEMPO REAL</h1>
+        <p>Datos provenientes del ESP32 &rarr; FastAPI &rarr; MySQL &rarr; Power BI</p>
+      </div>
+
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        Actualizando desde Power BI
+      </div>
+    </div>
+
+    <div class="frame-wrapper">
+      <iframe
+        id="pbiFrame"
+        title="Dashboard IoT ESP32"
+        src="https://app.powerbi.com/reportEmbed?reportId=97816d51-2d3a-47b7-891d-d9224b9ca6bf&autoAuth=true&ctid=1e9aabe8-67f8-4f1c-a329-a754e92499ae" frameborder="0" allowFullScreen="true"></iframe>"
+        allowfullscreen="true">
+      </iframe>
+    </div>
+
+    <div class="actions">
+      <button class="btn-refresh" onclick="document.getElementById('pbiFrame').src = document.getElementById('pbiFrame').src;">
+        <span class="icon">⟳</span>
+        Actualizar dashboard
+      </button>
+    </div>
+  </div>
+</body>
+</html>
