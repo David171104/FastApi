@@ -170,9 +170,9 @@
   button, .btn {
     padding: 12px 16px;
     border-radius: 10px;
-    background: rgba(0, 255, 198, 0.10); /* mismo volumen glass */
+    background: #00ffc6;
     border: 1px solid rgba(0, 255, 198, 0.25);
-    color: #adfff0;
+    color: #0a0a0f;
     cursor: pointer;
     font-weight: 600;
     backdrop-filter: blur(6px);
@@ -255,13 +255,22 @@
   .nav button:hover { background: rgba(255,255,255,0.02); }
   .nav button.active { background: linear-gradient(90deg,#0d2218, #0f2e26); color: #00ffc6; box-shadow: inset 0 0 0 1px rgba(0,255,198,0.04); }
 
-  .signout { margin-top: 18px; width: 100%; padding: 10px 14px; background: transparent; border: 1px solid rgba(255,255,255,0.04); color: #ffcfcf; border-radius: 8px; cursor: pointer; }
+  .signout { 
+    margin-top: 18px; 
+    width: 100%; 
+    padding: 10px 14px; 
+    background: #00ffc6;
+    border: 1px solid rgba(255,255,255,0.04); 
+    color: #0a0a0f;
+    border-radius: 8px; 
+    cursor: pointer; 
+  }
 
   /* MAIN PANEL */
   .main-panel { flex: 1; padding: 34px; }
   .top-row { display:flex; justify-content: space-between; align-items:center; gap: 16px; margin-bottom: 18px; }
 
-  .section-card { background: linear-gradient(180deg,#222237,#2a2a40); padding: 22px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.45); margin-bottom: 18px; }
+  .section-card { background: linear-gradient(180deg,#222237,#2a2a40); padding: 22px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.45); margin-bottom: 18px; animation: fadeInUp 0.6s ease-in; }
   .section-card h2 { color: #9fffd0; margin: 0 0 8px 0; font-size: 1.15rem; }
   .section-card p { color: #cad0df; margin: 0 0 16px 0; }
 
@@ -280,6 +289,18 @@
     .info-grid { grid-template-columns: 1fr; }
     .main-panel { padding: 20px; }
   }
+
+  @keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 </style>
 

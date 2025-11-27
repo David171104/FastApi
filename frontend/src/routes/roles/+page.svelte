@@ -206,13 +206,13 @@
   h2 {
     font-size: 1.3rem;
     font-weight: 600;
-    color: #f1f5f9;
+    color: #00ffc6;
   }
 
   .add-btn,
   .save-btn {
-    background: #2563eb;
-    color: white;
+    background-color: #00ffc6;
+    color: #0a0a0f;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
