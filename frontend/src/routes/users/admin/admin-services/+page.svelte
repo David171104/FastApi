@@ -102,6 +102,7 @@
 
   <div class="assigned-list">
     <h4>Servicios Registrados</h4>
+    <div class="table-wrapper">
     <table>
       <thead>
         <tr>
@@ -144,6 +145,7 @@
         {/if}
       </tbody>
     </table>
+    </div>
   </div>
 </div>
 
@@ -227,11 +229,18 @@
 
   table {
     width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
     background: #1e1e2f;
     border-radius: 10px;
     overflow: hidden;
   }
+
+  .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  }
+
 
   th, td {
     text-align: left;
