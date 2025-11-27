@@ -22,7 +22,7 @@
     text-align: center;
     margin-bottom: 25px;
     font-size: 1.6rem;
-    color: #00d1b2;
+    color: #00ffc6;
   }
 
   .user-table {
@@ -65,9 +65,9 @@
 
     /* ya tienes esto, solo agregamos margen para separarlo visualmente */
     .edit-btn {
-    background-color: #00d1b2;
+    background-color: #00ffc6;
     border: none;
-    color: white;
+    color: #0a0a0f;
     padding: 8px 12px;
     border-radius: 6px;
     cursor: pointer;
