@@ -127,42 +127,6 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
-  .appbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 25px;
-  }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .logo {
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-  }
-
-  .title {
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  .subtitle {
-    font-size: 13px;
-    color: #a0aec0;
-  }
-
   .card {
     background: #141b2d;
     padding: 20px;
@@ -173,13 +137,7 @@
 
   h3 {
     margin-top: 0;
-    color: #93c5fd;
-  }
-
-  .desc {
-    color: #a0aec0;
-    font-size: 14px;
-    margin-bottom: 15px;
+    color: #00ffc6;
   }
 
   .search-form {
@@ -201,7 +159,7 @@
   label {
     display: block;
     font-size: 14px;
-    color: #cbd5e1;
+    color: #00ffc6;
     margin-bottom: 6px;
   }
 
@@ -236,20 +194,10 @@
   }
 
   .btn.primary {
-    background-color: #3b82f6;
-    color: white;
+    background-color: #00ffc6;
+    color: #0a0a0f;
   }
 
-  .btn.danger {
-    background-color: #ef4444;
-    color: white;
-  }
-
-  .btn.ghost {
-    background-color: transparent;
-    color: #94a3b8;
-    border: 1px solid #475569;
-  }
 
   .table-wrap {
     overflow-x: auto;
@@ -284,23 +232,11 @@
     color: #111827;
   }
 
-  .badge.active {
-    background-color: #34d399;
-  }
-
-  .badge.pending {
-    background-color: #facc15;
-  }
-
-  .badge.completed {
-    background-color: #60a5fa;
-  }
-
   .btn-pdf {
     background: linear-gradient(135deg, var(--danger) 0%, #ff6b85 100%);
     border: none;
     cursor: pointer;
-    color: white;
+    color: #00ffc6;
     padding: 8px 16px;
     border-radius: 8px;
     font-size: 13px;

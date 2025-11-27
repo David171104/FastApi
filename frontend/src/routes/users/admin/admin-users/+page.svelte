@@ -6,6 +6,7 @@
     padding: 40px;
     background-color: #1e1e2f;
     min-height: 100vh;
+    animation: fadeInUp 0.6s ease-in;
   }
 
   .card {
@@ -26,7 +27,7 @@
     text-align: center;
     margin-bottom: 25px;
     font-size: 1.6rem;
-    color: #00d1b2;
+    color: #00ffc6;
   }
 
   .user-table {
@@ -195,8 +196,8 @@
 }
 
 .create-btn {
-  background-color: #10b981;
-  color: white;
+  background-color: #00ffc6;
+  color: #0a0a0f;
   border: none;
   padding: 8px 14px;
   border-radius: 6px;
@@ -211,6 +212,18 @@
 .create-btn:hover {
   background-color: #059669;
 }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 </style>
 

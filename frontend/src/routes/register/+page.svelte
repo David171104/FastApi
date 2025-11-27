@@ -18,8 +18,12 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
   max-width: 500px;
   width: 100%;
-  margin: 0 auto;
+  margin: 0 auto 4rem auto;
+
+  /* Añadido: animación */
+  animation: fadeIn 0.6s ease-in;
 }
+
 
 /* Título */
 .form-container h2 {
@@ -119,6 +123,17 @@ button[type="button"]:hover {
 
   button {
     font-size: 0.95rem;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
