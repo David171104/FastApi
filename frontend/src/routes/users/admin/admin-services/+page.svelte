@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { getAllServices, loadTechnicians, assignTechnician   } from './admin-services.js';
-  import { getStatusLabel } from '$lib/helpers/constants.js';
+  import { getStatusLabel, formatTime, formatDate } from '$lib/helpers/constants.js';
   import Swal from 'sweetalert2';
 
 
@@ -24,8 +24,46 @@
 
 
 
-  async function openAssignModal(serviceId) {
-    selectedServiceId = serviceId;
+  async function openAssignModal(service) {
+    selectedServiceId = service.id;
+
+    
+    const Service = services.find(s => s.id === selectedServiceId);
+    if (!Service) {
+      console.error("Servicio no encontrado:", selectedServiceId);
+      return;
+    }
+
+    const serviceDate = service.request_date || null;
+    const serviceTime = service.request_time || null;
+    
+
+    if (!serviceDate || !serviceTime) {
+      console.error("El servicio no tiene asignada fecha u hora:", service);
+      return;
+    }
+
+    technicians = technicians.map(t => {
+      
+      const conflict = services.some(s =>
+        s.technician_id === t.id &&   
+        s.id !== Service.id &&    
+        s.request_date === serviceDate && 
+        s.request_time === serviceTime   
+      );
+
+      return {
+        ...t,
+        hasConflict: conflict
+      };
+    });
+
+
+    if (selectedTechnician) {
+      const sel = technicians.find(t => t.id === selectedTechnician);
+      if (sel && sel.hasConflict) selectedTechnician = "";
+    }
+
     showAssignModal = true;
   }
 
@@ -86,13 +124,13 @@
               <td>{service.client_name || 'Sin cliente'}</td>
               <td>{service.technician_name || 'Sin asignar'}</td>
               <td>{service.service_type}</td>
-              <td>{service.request_date}</td>
-              <td>{service.request_time}</td>
+              <td>{formatDate(service.request_date)}</td>
+              <td>{formatTime(service.request_time)}</td>
               <td>{service.address}</td>
               <td>{@html getStatusLabel(service.current_status)}</td>
               <td>
                 {#if service.current_status === 'pending'}
-                  <button class="assign-btn" on:click={() => openAssignModal(service.id)}>
+                  <button class="assign-btn" on:click={() => openAssignModal(service)}>
                     <i class="fas fa-user-gear"></i> Asignar Técnico
                   </button>
                 {:else}
@@ -118,15 +156,22 @@
       <p>Selecciona un técnico para este servicio:</p>
 
       <!-- ÚNICO SELECT -->
-      <select
-        bind:value={selectedTechnician}
-        class="w-full border rounded p-2"
-      >
-        <option value="">Seleccionar técnico...</option>
-        {#each technicians as t}
-          <option value={t.id}>{t.name} {t.last_name}</option>
-        {/each}
-      </select>
+     <select
+  bind:value={selectedTechnician}
+  class="w-full border rounded p-2"
+>
+  <option value="">Seleccionar técnico...</option>
+
+  {#each technicians as t}
+    <option 
+      value={t.id} 
+      disabled={t.hasConflict}
+    >
+      {t.name} {t.last_name} {#if t.hasConflict} — (No disponible) {/if}
+    </option>
+  {/each}
+</select>
+
 
       <div class="modal-actions">
         <button class="btn btn-cancel" on:click={closeAssignModal}>Cancelar</button>
