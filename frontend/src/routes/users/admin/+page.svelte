@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
 
-  let pbiUrl = "https://app.powerbi.com/view?r=eyJrIjoiNzUyZmY3ZjAtYTZjNC00N2ExLTlhMTAtMjVjOTkyOTE3NGQ2IiwidCI6IjFlOWFhYmU4LTY3ZjgtNGYxYy1hMzI5LWE3NTRlOTI0OTlhZSIsImMiOjR9";
+  let pbiUrl = "https://app.powerbi.com/view?r=eyJrIjoiZTBiZWFlOGQtMGQyZi00ZGY0LTlhYTktZDI2NTkzNTI1MzIxIiwidCI6IjFlOWFhYmU4LTY3ZjgtNGYxYy1hMzI5LWE3NTRlOTI0OTlhZSIsImMiOjR9";
   let pbiFrame;
 
   function refreshDashboard() {
