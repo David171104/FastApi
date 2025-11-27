@@ -384,3 +384,90 @@ class UserController:
 
         return {"message": "Reporte actualizado correctamente"}
 
+
+
+
+    def get_client_stats(self, client_id: int):
+        conn = None
+        cursor = None
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            # 1) Servicios del mes actual
+            cursor.execute("""
+                SELECT COUNT(*) AS total
+                FROM services
+                WHERE client_id = %s
+                AND MONTH(request_date) = MONTH(CURDATE())
+                AND YEAR(request_date) = YEAR(CURDATE())
+            """, (client_id,))
+            servicios_mes = cursor.fetchone()["total"]
+
+            # 2) Completados
+            cursor.execute("""
+                SELECT COUNT(*) AS total
+                FROM services
+                WHERE client_id = %s AND current_status = 'completed'
+            """, (client_id,))
+            completados = cursor.fetchone()["total"]
+
+            # 3) Pendientes
+            cursor.execute("""
+                SELECT COUNT(*) AS total
+                FROM services
+                WHERE client_id = %s AND current_status = 'pending'
+            """, (client_id,))
+            pendientes = cursor.fetchone()["total"]
+
+            # 4) Promedio por semana
+            cursor.execute("""
+                SELECT COUNT(*) AS total
+                FROM services
+                WHERE client_id = %s
+            """, (client_id,))
+            total_servicios = cursor.fetchone()["total"]
+
+            promedio_semana = round(total_servicios / 4, 1)
+
+            # 5) Gráfica de barras por tipo
+            cursor.execute("""
+                SELECT service_type, COUNT(*) AS cantidad
+                FROM services
+                WHERE client_id = %s
+                GROUP BY service_type
+            """, (client_id,))
+            barras = cursor.fetchall()
+
+            # 6) Torta por estado
+            cursor.execute("""
+                SELECT current_status, COUNT(*) AS cantidad
+                FROM services
+                WHERE client_id = %s
+                GROUP BY current_status
+            """, (client_id,))
+            torta_raw = cursor.fetchall()
+
+            torta = {"pending": 0, "assigned": 0, "completed": 0}
+            for row in torta_raw:
+                torta[row["current_status"]] = row["cantidad"]
+
+            return {
+                "success": True,
+                "resumen": [
+                    { "titulo": "Servicios este mes", "valor": servicios_mes, "color": "#00d4b3" },
+                    { "titulo": "Completados", "valor": completados, "color": "#1ea9ff" },
+                    { "titulo": "Pendientes", "valor": pendientes, "color": "#d4d4d4" },
+                    { "titulo": "Promedio por semana", "valor": promedio_semana, "color": "#00d4b3" }
+                ],
+                "barras": barras,
+                "torta": torta
+            }
+
+        except Exception as e:
+            return { "success": False, "error": str(e) }
+
+        finally:
+            if cursor: cursor.close()
+            if conn: conn.close()
