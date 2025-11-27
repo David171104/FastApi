@@ -315,4 +315,9 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(255, 78, 109, 0.4);
 }
+
+button.btn.primary {
+  cursor: pointer;
+}
+
 </style>

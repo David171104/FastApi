@@ -14,7 +14,7 @@
         </div>
 
         <div class="hero-meta">
-          Monitoreo en tiempo real · Alertas inteligentes · Reportes de consumo
+          Monitoreo en tiempo real · Reportes de consumo
         </div>
       </div>
     </div>
@@ -141,25 +141,13 @@
   <div class="page-container">
     <h2 class="section-title">Proyectos Recientes</h2>
     <div class="images">
-      <div class="img img-1"></div>
-      <div class="img img-2"></div>
-      <div class="img img-3"></div>
+      <div class="img" style="background-image: url('/1.jpg')"></div>
+      <div class="img" style="background-image: url('/3.avif')"></div>
+      <div class="img" style="background-image: url('/4.jpg')"></div>
     </div>
   </div>
 </section>
 
-<section class="footer-banner">
-  <div class="page-container footer-inner">
-    <div>
-      <h2>¿Listo para optimizar tus sistemas de climatización?</h2>
-      <p>
-        Agenda una visita técnica o solicita acceso a la plataforma de monitoreo
-        para empezar a ahorrar energía desde hoy.
-      </p>
-    </div>
-    <a href="/contacto" class="btn-footer">Hablar con un asesor</a>
-  </div>
-</section>
 
 <style>
   :root {
@@ -428,12 +416,21 @@
     font-size: 0.9rem;
   }
 
-  /* Gallery */
   .gallery .images {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2.2rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 30px;
+  }
+
+  .gallery .img {
+    width: 100%;
+    height: 220px;
+    background-size: cover;       /* ← recorta pero se ve PRO */
+    background-position: center;  /* ← centra */
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   }
 
   .img {
@@ -455,58 +452,6 @@
 
   .img:hover {
     transform: translateY(-4px);
-  }
-
-  .img-1 {
-    background: url("https://images.unsplash.com/photo-1604328698692-3a3a5b2e8b26?auto=format&fit=crop&w=800&q=80")
-      center/cover no-repeat;
-  }
-
-  .img-2 {
-    background: url("https://images.unsplash.com/photo-1599785209796-88630776a8a1?auto=format&fit=crop&w=800&q=80")
-      center/cover no-repeat;
-  }
-
-  .img-3 {
-    background: url("https://images.unsplash.com/photo-1590756254933-7760d81faba6?auto=format&fit=crop&w=800&q=80")
-      center/cover no-repeat;
-  }
-
-  /* Footer banner */
-  .footer-banner {
-    background: linear-gradient(135deg, #00d4b3, #007b7b);
-    color: #fff;
-    text-align: center;
-  }
-
-  .footer-inner {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .footer-banner h2 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .footer-banner p {
-    font-size: 0.95rem;
-    max-width: 520px;
-  }
-
-  .btn-footer {
-    background: #0f172a;
-    color: #e5e7eb;
-    border-radius: 999px;
-    padding: 0.8rem 1.6rem;
-    font-weight: 600;
-  }
-
-  .btn-footer:hover {
-    background: #020617;
   }
 
   /* Responsive */

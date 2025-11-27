@@ -282,30 +282,30 @@
     <div class="modal">
       <h3>{isCreating ? 'Crear Usuario' : 'Editar Usuario'}</h3>
 
-      <label>Nombre</label>
-      <input bind:value={selectedUser.name} type="text" />
+      <label>Nombre <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span></label>
+      <input bind:value={selectedUser.name} type="text" required/>
 
       <label>Apellido</label>
-      <input bind:value={selectedUser.last_name} type="text" />
+      <input bind:value={selectedUser.last_name} type="text" required />
 
-      <label>Email</label>
-      <input bind:value={selectedUser.email} type="email" />
+      <label>Email <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span></label>
+      <input bind:value={selectedUser.email} type="email" required />
 
-      <label>Documento</label>
-      <input bind:value={selectedUser.document_number} type="text" />
+      <label>Documento <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span> </label>
+      <input bind:value={selectedUser.document_number} type="text" required/>
 
-      <label>Edad</label>
-      <input bind:value={selectedUser.age} type="text" />
+      <label>Edad <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span> </label>
+      <input bind:value={selectedUser.age} type="text" required/>
 
-      <label>Rol</label>
-      <select bind:value={selectedUser.role_id}>
+      <label>Rol <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span> </label>
+      <select bind:value={selectedUser.role_id} required>
         {#each roles as role}
           <option value={role.id}>{role.name}</option>
         {/each}
       </select>
       
        {#if isCreating}
-        <label>Contraseña</label>
+        <label>Contraseña <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span></label>
         <input bind:value={selectedUser.password} type="password" placeholder="Contraseña" />
       {/if}
 
@@ -360,6 +360,38 @@
   }
 
   async function saveChanges() {
+
+    const requiredFields = {
+      name: "Nombre",
+      last_name: "Apellido",
+      email: "Correo",
+      document_number: "Documento",
+      age: "Edad",
+      role_id: "Rol",
+    };
+
+
+    if (isCreating) {
+      requiredFields.password = "Contraseña";
+    }
+
+
+    const emptyFields = Object.entries(requiredFields)
+      .filter(([key]) => !selectedUser[key] || selectedUser[key].toString().trim() === "")
+      .map(([_, label]) => label);
+
+    if (emptyFields.length > 0) {
+      Swal.fire({
+        title: "Campos obligatorios incompletos",
+        html: `
+          Debes completar los siguientes campos:<br><br>
+          <b>${emptyFields.join(", ")}</b>
+        `,
+        icon: "warning",
+      });
+      return;
+    }
+    
     const confirm = await Swal.fire({
       title: isCreating ? "¿Crear usuario?" : "¿Guardar cambios?",
       text: isCreating ? "Se creará un nuevo usuario." : "¿Deseas actualizar este usuario?",

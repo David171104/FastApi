@@ -1,6 +1,10 @@
 <script>
-  // Datos de ejemplo (simulación visual)
-  const servicios = [
+  import { onMount } from "svelte";
+  import Swal from "sweetalert2";
+  import { getStats } from "./client.js";
+
+ 
+  const serviciosPrincipales = [
     {
       id: 1,
       nombre: "Mantenimiento Preventivo",
@@ -35,31 +39,40 @@
     }
   ];
 
-  // Datos de ejemplo
-  const resumen = [
-    { titulo: "Servicios este mes", valor: 28, color: "#00d4b3" },
-    { titulo: "Completados", valor: 19, color: "#1ea9ff" },
-    { titulo: "Pendientes", valor: 6, color: "#d4d4d4" },
-    { titulo: "Promedio por semana", valor: 7, color: "#00d4b3" }
-  ];
+  let user = {};
+  let resumen = [];
+  let datosBarras = [];
+  let torta = {};
 
-  const datosBarras = [
-    { tipo: "Instalación", cantidad: 10 },
-    { tipo: "Mantenimiento", cantidad: 12 },
-    { tipo: "Recarga", cantidad: 5 },
-    { tipo: "Diagnóstico", cantidad: 8 }
-  ];
+  onMount(async () => {
+    user = JSON.parse(localStorage.getItem("user"));
 
+    if (!user || !user.id) {
+      Swal.fire("Error", "No se encontró la sesión del usuario", "error");
+      return;
+    }
+
+    const data = await getStats(user.id);
+
+    if (!data || !data.success) {
+      Swal.fire("Error", "No se pudieron cargar las estadísticas", "error");
+      return;
+    }
+
+    resumen = data.resumen;
+    datosBarras = data.barras;
+    torta = data.torta;
+  });
 </script>
 
 <div class="servicios-page">
   <section class="intro">
-    <h1>Bienvenido a tus servicios</h1>
+    <h1>Bienvenido a tus servicios {user?.name}</h1>
     <p>Consulta el estado actual de tus mantenimientos y solicitudes.</p>
   </section>
 
   <section class="lista-servicios">
-    {#each servicios as servicio}
+    {#each serviciosPrincipales as servicio}
       <div class="card">
         <div class="icon" style="color: {servicio.color}">{servicio.icono}</div>
         <h2>{servicio.nombre}</h2>
@@ -88,36 +101,47 @@
     {/each}
   </section>
 
-  <!-- Simulación de gráficas -->
+  <!-- Gráficas -->
   <section class="graficas">
+
+    <!-- BARRAS -->
     <div class="grafica barras">
       <h2>Servicios por tipo</h2>
+
       <div class="bar-chart">
         {#each datosBarras as d}
           <div class="bar-item">
-            <div class="bar" style="height: {d.cantidad * 10}px"></div>
-            <span>{d.tipo}</span>
+            <div 
+              class="bar" 
+              style="height: {d.cantidad * 12}px" 
+              data-tooltip="{d.cantidad}"
+            >
+              
+            </div>
+            <span class="label">{d.service_type || d.tipo}</span>
           </div>
         {/each}
       </div>
     </div>
 
+    <!-- TORTA -->
     <div class="grafica circular">
       <h2>Estados de servicios</h2>
+
       <div class="pie">
-        <div class="slice completado"></div>
-        <div class="slice pendiente"></div>
-        <div class="slice curso"></div>
+        <div class="slice completado" style="--value:{torta.completed}"></div>
+        <div class="slice pendiente" style="--value:{torta.pending}"></div>
+        <div class="slice curso" style="--value:{torta.assigned}"></div>
       </div>
+
       <ul class="leyenda">
-        <li><span class="color completado"></span> Completado</li>
-        <li><span class="color curso"></span> En curso</li>
-        <li><span class="color pendiente"></span> Pendiente</li>
+        <li><span class="color completado"></span> Completado ({torta.completed})</li>
+        <li><span class="color curso"></span> En curso ({torta.assigned})</li>
+        <li><span class="color pendiente"></span> Pendiente ({torta.pending})</li>
       </ul>
     </div>
-  </section>
 
-  
+  </section>
 </div>
 
 <style>
@@ -227,22 +251,6 @@
     align-items: center;
   }
 
-  .intro {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .intro h1 {
-    font-size: 2.2rem;
-    color: #00d4b3;
-  }
-
-  .intro p {
-    color: #d4d4d4;
-    font-size: 1rem;
-    margin-top: 0.5rem;
-  }
-
   /* Tarjetas resumen */
   .resumen {
     display: grid;
@@ -251,18 +259,6 @@
     width: 100%;
     max-width: 1000px;
     margin-bottom: 3rem;
-  }
-
-  .card {
-    background: #25243a;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    text-align: center;
-    transition: transform 0.3s ease;
-  }
-
-  .card:hover {
-    transform: translateY(-5px);
   }
 
   .card h3 {
@@ -299,7 +295,7 @@
     margin-bottom: 1.5rem;
   }
 
-  /* Gráfica de barras simulada */
+  /* Gráfica de barras */
   .bar-chart {
     display: flex;
     align-items: flex-end;
@@ -316,6 +312,8 @@
     background: linear-gradient(180deg, #00d4b3, #1ea9ff);
     border-radius: 6px 6px 0 0;
     transition: height 0.3s ease;
+    position: relative;
+    cursor: pointer;
   }
 
   .bar-item span {
@@ -325,7 +323,45 @@
     font-size: 0.85rem;
   }
 
-  /* Gráfica circular simulada */
+  /* Tooltip */
+  .bar::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00d4b3;
+    color: #1c1b29;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+    box-shadow: 0 0 10px rgba(0, 212, 179, 0.4);
+  }
+
+  .bar::before {
+    content: "";
+    position: absolute;
+    bottom: 92%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #00d4b3 transparent transparent transparent;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .bar:hover::after,
+  .bar:hover::before {
+    opacity: 1;
+  }
+
+  /* Gráfica circular */
   .circular {
     display: flex;
     flex-direction: column;
@@ -372,61 +408,6 @@
   }
   .color.pendiente {
     background: #d4d4d4;
-  }
-
-  /* Tabla */
-  .tabla {
-    width: 100%;
-    max-width: 1000px;
-  }
-
-  .tabla h2 {
-    color: #00d4b3;
-    margin-bottom: 1rem;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #25243a;
-    border-radius: 1rem;
-    overflow: hidden;
-  }
-
-  th, td {
-    padding: 1rem;
-    text-align: left;
-    font-size: 0.95rem;
-  }
-
-  th {
-    background: #2d2b3f;
-    color: #00d4b3;
-  }
-
-  tr:nth-child(even) {
-    background: #2a2940;
-  }
-
-  td {
-    color: #d4d4d4;
-  }
-
-  .estado.completado {
-    color: #00d4b3;
-  }
-
-  .estado.pendiente {
-    color: #d4d4d4;
-  }
-
-  @media (max-width: 600px) {
-    .intro h1 {
-      font-size: 1.8rem;
-    }
-    th, td {
-      font-size: 0.85rem;
-    }
   }
 
 </style>

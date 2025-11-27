@@ -5,7 +5,11 @@ from app.models.users.user_model import User #Model
 from app.models.login.user_login_model import UserLogin
 from fastapi.encoders import jsonable_encoder #Serializable JSON structures
 from fastapi.responses import JSONResponse
+from fastapi_mail import FastMail, MessageSchema
+from app.config.email_config import mail_config
 from werkzeug.security import *
+
+
 
 
 class AdminController:
@@ -288,42 +292,79 @@ class AdminController:
             conn.close()
 
 
-    def assign_technician(self, service_id: int, technician_id: int):
-        conn = None
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
+async def assign_technician(self, service_id: int, technician_id: int):
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
+        # Revisar que el técnico exista
+        cursor.execute("SELECT name, email FROM users WHERE id = %s AND deleted_at IS NULL", (technician_id,))
+        tech = cursor.fetchone()
+        if not tech:
+            raise HTTPException(status_code=404, detail="Técnico no encontrado.")
 
-            cursor.execute("SELECT id FROM users WHERE id = %s AND deleted_at IS NULL", (technician_id,))
-            tech = cursor.fetchone()
-            if not tech:
-                raise HTTPException(status_code=404, detail="Técnico no encontrado.")
+        tech_name, tech_email = tech
+        print("Técnico encontrado:", tech_name, tech_email)
 
+        # Revisar que el servicio exista
+        cursor.execute("SELECT id, client_id, request_date, request_time, service_type, address FROM services WHERE id = %s", (service_id,))
+        service = cursor.fetchone()
+        if not service:
+            raise HTTPException(status_code=404, detail="Servicio no encontrado.")
 
-            cursor.execute("SELECT id FROM services WHERE id = %s", (service_id,))
-            service = cursor.fetchone()
-            if not service:
-                raise HTTPException(status_code=404, detail="Servicio no encontrado.")
+        print("Servicio encontrado:", service)
 
+        # Actualizar servicio
+        cursor.execute("""
+            UPDATE services
+            SET technician_id = %s, current_status = 'assigned', updated_at = NOW()
+            WHERE id = %s
+        """, (technician_id, service_id))
+        conn.commit()
 
-            cursor.execute("""
-                UPDATE services
-                SET technician_id = %s, current_status = 'assigned', updated_at = NOW()
-                WHERE id = %s
-            """, (technician_id, service_id))
-            conn.commit()
+        # Enviar correo al técnico
+        from fastapi_mail import FastMail, MessageSchema
+        from app.config.email_config import mail_config
 
-            return {"message": "Técnico asignado correctamente."}
+        fm = FastMail(mail_config)
 
-        except HTTPException:
-            raise
-        except Exception as e:
-            print("Error asignando técnico:", e)
-            raise HTTPException(status_code=500, detail="Error al asignar técnico.")
-        finally:
-            if conn:
-                conn.close()
+        html = f"""
+        <html>
+        <body>
+            <p>Hola {tech_name},</p>
+            <p>Se te ha asignado un nuevo servicio:</p>
+            <ul>
+                <li>ID Servicio: {service[0]}</li>
+                <li>Cliente ID: {service[1]}</li>
+                <li>Tipo: {service[4]}</li>
+                <li>Fecha: {service[2]}</li>
+                <li>Hora: {service[3]}</li>
+                <li>Dirección: {service[5]}</li>
+            </ul>
+        </body>
+        </html>
+        """
+
+        message = MessageSchema(
+            subject="Nuevo servicio asignado",
+            recipients=[tech_email],
+            body=html,
+            subtype="html"
+        )
+
+        await fm.send_message(message)
+
+        return {"message": "Técnico asignado y correo enviado correctamente."}
+
+    except Exception as e:
+        print("ERROR en assign_technician:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+    finally:
+        if conn:
+            conn.close()
+                
 
  
     def obtener_kpis(self):
@@ -422,4 +463,75 @@ class AdminController:
                 cursor.close()
                 conn.close()
 
+    def verify_password(self, user_id, data):
+        print("old_password", data["old_password"])
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
 
+            cursor.execute("SELECT password FROM users WHERE id = %s", (user_id,))
+            user = cursor.fetchone()
+
+            if not user:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+            if not check_password_hash(user["password"], data["old_password"]):
+                raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+
+            return {"message": "Contraseña verificada"}
+
+        finally:
+            conn.close()
+
+    def change_password(self, user_id, data):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            new_password_hashed = generate_password_hash(data["new_password"])
+
+            cursor.execute("""
+                UPDATE users
+                SET password = %s
+                WHERE id = %s
+            """, (new_password_hashed, user_id))
+
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+            return {"message": "Contraseña cambiada correctamente"}
+
+        finally:
+            conn.close()
+
+    def update_profile(self, user_id, data):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            cursor.execute("""
+                UPDATE users 
+                SET name = %s,
+                    last_name = %s,
+                    email = %s,
+                    document_number = %s
+                WHERE id = %s
+            """, (
+                data["name"],
+                data["last_name"],
+                data["email"],
+                data["document_number"],
+                user_id
+            ))
+
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+            return {"message": "Información actualizada correctamente"}
+
+        finally:
+            conn.close()
