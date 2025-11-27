@@ -49,7 +49,6 @@ def get_all_technicians(token_data: dict = Depends(verify_token)):
     return response
 
 
-
 @router.put("/users/services/{service_id}/assign")
 async def assign_technician(service_id: int, request: Request):
     try:
@@ -188,11 +187,16 @@ async def obtener_kpis(token_data: dict = Depends(verify_token)):
 #     return {"resultado": response}
 
 @router.get("/admin/reports")
-async def get_reports( technician_id: Optional[int] = None, status: str = "all", date_from: Optional[str] = None, date_to: Optional[str] = None, token_data: dict = Depends(verify_token) ):
+async def get_reports(
+    technician_id: Optional[int] = None,
+    status: str = "all",
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
     response = adminController.get_all_reports(technician_id, status, date_from, date_to)
     return response
  
-
 @router.post("/users/verify_password/{user_id}")
 async def verify_password(user_id: int, request: dict, token_data: dict = Depends(verify_token)):
     return adminController.verify_password(user_id, request)

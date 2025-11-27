@@ -130,9 +130,17 @@
               <td>{service.address}</td>
               <td>{@html getStatusLabel(service.current_status)}</td>
               <td>
-                {#if service.current_status === 'pending'}
-                  <button class="assign-btn" on:click={() => openAssignModal(service)}>
-                    <i class="fas fa-user-gear"></i> Asignar Técnico
+                {#if service.current_status !== 'completed'}
+                  <button 
+                    class="assign-btn {service.technician_name ? 'reassign' : 'assign'}" 
+                    on:click={() => openAssignModal(service)}
+                  >
+                    <i class="fas fa-user-gear"></i> 
+                    {#if service.technician_name}
+                      Reasignar Técnico
+                    {:else}
+                      Asignar Técnico
+                    {/if}
                   </button>
                 {:else}
                   <span style="color:#999;">—</span>
@@ -192,11 +200,12 @@
 
   .assign-container {
     max-width: 1100px;
-    margin: 40px auto;
+    margin: 0 auto 7rem auto;
     background-color: #1f1f2f;
     padding: 2rem;
     border-radius: 14px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    animation: fadeInUp 0.6s ease-in;
   }
 
   .assign-header h6 {
@@ -226,6 +235,41 @@
     background-color: #00d1b2;
     transform: scale(1.03);
   }
+
+    /* Botón de asignar técnico */
+  .assign-btn.assign {
+    background-color: #EAB308;
+    color: #0a0a0f;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .assign-btn.assign:hover {
+    background-color: #d59f07;
+    transform: scale(1.03);
+  }
+
+  /* Botón de reasignar técnico (mantiene el color original) */
+  .assign-btn.reassign {
+    background-color: #00ffc6;
+    color: #0a0a0f;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .assign-btn.reassign:hover {
+    background-color: #00d1b2;
+    transform: scale(1.03);
+  }
+
 
   table {
     width: 100%;
@@ -342,13 +386,15 @@
     background: #00d1b2;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(-15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  @keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
 </style>
