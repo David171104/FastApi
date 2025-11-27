@@ -3,8 +3,9 @@
 </footer>
 
 <style>
+
    footer {
-    /* position: fixed; */
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
@@ -17,6 +18,7 @@
     box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
     letter-spacing: 0.3px;
     z-index: 100; /* Asegura que quede encima del contenido */
+    margin-top: auto;
   }
 
   footer p {

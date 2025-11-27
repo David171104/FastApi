@@ -115,6 +115,7 @@
 		color: #e5e7eb;
 		font-family: 'Inter', sans-serif;
 		padding: 2rem;
+		padding-bottom: 100px;
 	}
 
 	header {
