@@ -1,5 +1,3 @@
-
-
 <script>
   import { onMount } from "svelte";
 
@@ -7,13 +5,39 @@
     "https://app.powerbi.com/reportEmbed?reportId=97816d51-2d3a-47b7-891d-d9224b9ca6bf&autoAuth=true&ctid=1e9aabe8-67f8-4f1c-a329-a754e92499ae";
 
   let pbiFrame;
+  let ws;
 
   onMount(() => {
-    // Si necesitas lógica al montar, aquí va
+    // 1. Conectar WebSocket al backend FastAPI
+    ws = new WebSocket("ws://192.168.1.9:8002/ws/actualizaciones");
+
+    // 2. Cuando llegue una nueva lectura → refrescar dashboard
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.evento === "nueva_lectura") {
+        console.log("Nueva lectura recibida:", data);
+
+        // Refrescar Power BI sin recargar página
+        if (pbiFrame) {
+          pbiFrame.src = pbiFrame.src;
+        }
+      }
+    };
+
+    ws.onopen = () => {
+      console.log("WebSocket conectado a FastAPI ✔");
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket desconectado. Reintentando…");
+      setTimeout(() => location.reload(), 1500);
+    };
   });
 
+  // Botón manual opcional
   function refreshDashboard() {
-    pbiFrame.src = pbiFrame.src; // recarga correcta en Svelte
+    pbiFrame.src = pbiFrame.src;
   }
 </script>
 
@@ -26,7 +50,7 @@
 
     <div class="status-pill">
       <div class="status-dot"></div>
-      Actualizando desde Power BI
+      Actualizando automáticamente (WebSocket)
     </div>
   </div>
 
@@ -43,7 +67,7 @@
   <div class="actions">
     <button class="btn-refresh" on:click={refreshDashboard}>
       <span class="icon">⟳</span>
-      Actualizar dashboard
+      Refrescar manual
     </button>
   </div>
 </div>
@@ -100,7 +124,7 @@
       background: rgba(34, 197, 94, 0.12);
       border: 1px solid rgba(34, 197, 94, 0.35);
       font-size: 0.75rem;
-      color: #bbf7d0;
+      color: #22c55e;
       white-space: nowrap;
     }
 
@@ -115,7 +139,6 @@
     .frame-wrapper {
       position: relative;
       width: 100%;
-      /* Relación aproximada 16:9 */
       padding-top: 56.25%;
       border-radius: 14px;
       overflow: hidden;
@@ -168,4 +191,4 @@
         padding: 1.1rem 1.1rem 1.6rem;
       }
     }
-  </style>
+</style>
