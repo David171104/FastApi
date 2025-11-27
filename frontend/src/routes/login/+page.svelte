@@ -347,8 +347,6 @@
       </form>
 
       <div class="login-meta">
-        <span>¿Olvidaste tu contraseña? </span>
-        <a href="#">Recupérala aquí</a><br />
         <span>¿Aún no tienes cuenta? </span>
         <a href="/registro">Crear cuenta</a>
       </div>
