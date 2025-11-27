@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
 
   let powerbiUrl =
-    "https://app.powerbi.com/reportEmbed?reportId=97816d51-2d3a-47b7-891d-d9224b9ca6bf&autoAuth=true&ctid=1e9aabe8-67f8-4f1c-a329-a754e92499ae";
+    "https://app.powerbi.com/view?r=eyJrIjoiNzUyZmY3ZjAtYTZjNC00N2ExLTlhMTAtMjVjOTkyOTE3NGQ2IiwidCI6IjFlOWFhYmU4LTY3ZjgtNGYxYy1hMzI5LWE3NTRlOTI0OTlhZSIsImMiOjR9";
 
   let pbiFrame;
 
