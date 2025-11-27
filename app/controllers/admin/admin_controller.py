@@ -422,4 +422,75 @@ class AdminController:
                 cursor.close()
                 conn.close()
 
+    def verify_password(self, user_id, data):
+        print("old_password", data["old_password"])
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
 
+            cursor.execute("SELECT password FROM users WHERE id = %s", (user_id,))
+            user = cursor.fetchone()
+
+            if not user:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+            if not check_password_hash(user["password"], data["old_password"]):
+                raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+
+            return {"message": "Contraseña verificada"}
+
+        finally:
+            conn.close()
+
+    def change_password(self, user_id, data):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            new_password_hashed = generate_password_hash(data["new_password"])
+
+            cursor.execute("""
+                UPDATE users
+                SET password = %s
+                WHERE id = %s
+            """, (new_password_hashed, user_id))
+
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+            return {"message": "Contraseña cambiada correctamente"}
+
+        finally:
+            conn.close()
+
+    def update_profile(self, user_id, data):
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            cursor.execute("""
+                UPDATE users 
+                SET name = %s,
+                    last_name = %s,
+                    email = %s,
+                    document_number = %s
+                WHERE id = %s
+            """, (
+                data["name"],
+                data["last_name"],
+                data["email"],
+                data["document_number"],
+                user_id
+            ))
+
+            conn.commit()
+
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+            return {"message": "Información actualizada correctamente"}
+
+        finally:
+            conn.close()

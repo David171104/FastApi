@@ -1,6 +1,95 @@
 <script>
+  import { updateProfileRequest } from "./user.js";
+  import { verifyPasswordRequest, changePasswordRequest } from "./user.js";
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import axios from "axios";
+  import Swal from "sweetalert2";
+
+    let oldPassword = "";
+    let newPassword = "";
+    let confirmPassword = "";
+    let verified = false;
+
+
+    async function saveEdit() {
+      try {
+        const res = await updateProfileRequest(user.id, {
+          name: editData.name,
+          last_name: editData.last_name,
+          email: editData.email,
+          document_number: editData.document_number
+        });
+
+        Swal.fire({
+          icon: "success",
+          title: "Datos actualizados",
+          text: res.data.message,
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        user = { ...editData };
+        localStorage.setItem("user", JSON.stringify(user));
+        editing = false;
+
+      } catch (err) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: err.response?.data?.detail || "No se pudo actualizar",
+        });
+      }
+    }
+
+    async function verifyPassword(id) {
+      console.log("id", id);
+      console.log("old_password", oldPassword);
+      try {
+        await verifyPasswordRequest(id, oldPassword);
+        verified = true;
+      Swal.fire({
+      icon: "success",
+      title: "Contraseña verificada",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+      } catch (err) {
+      Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: err.response?.data?.detail || "Contraseña incorrecta",
+    });
+      }
+    }
+
+    async function changePassword(id) {
+      if (newPassword !== confirmPassword) {
+        return Swal.fire({
+          icon: "warning",
+          title: "Las contraseñas no coinciden",
+        });
+      }
+
+      try {
+        const res = await changePasswordRequest(id, newPassword);
+            Swal.fire({
+      icon: "success",
+      title: "Contraseña cambiada",
+      text: res.data.message,
+      timer: 1500,
+      showConfirmButton: false,
+    });
+        
+        newPassword = "";
+        confirmPassword = "";
+      } catch (err) {    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: err.response?.data?.detail || "Error al cambiar contraseña",
+    });
+      }
+    }
 
   // local image from conversation (profile/avatar placeholder)
   const avatarUrl = '/mnt/data/1c6e9797-7f2d-43aa-8a2e-085a9412b79e.png';
@@ -13,16 +102,6 @@
     joined: '2024-08-31'
   };
 
-  // sample data for security and payments
-  let devices = [
-    { id: 1, name: 'Laptop - Chrome', lastSeen: '2025-07-10' },
-    { id: 2, name: 'Android - Pixel', lastSeen: '2025-06-22' }
-  ];
-
-  let payments = [
-    { id: 1, method: 'Visa •••• 4242', active: true },
-    { id: 2, method: 'PayPal: user@pay', active: false }
-  ];
 
   // state for inline edits / forms
   let editing = false;
@@ -35,12 +114,6 @@
 
   function cancelEdit() {
     editing = false;
-  }
-
-  function saveEdit() {
-    user = { ...editData };
-    editing = false;
-    // here you would call API to persist changes
   }
 
   function signOut() {
@@ -62,6 +135,78 @@
 </script>
 
 <style>
+    .input {
+      width: 100%;
+      max-width: 90%;
+      padding: 12px 14px;
+      margin: 8px 0;
+      font-size: 15px;
+      border-radius: 10px;
+
+      /* Fondo glass */
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(6px);
+
+      /* Borde suave */
+      border: 1px solid rgba(255, 255, 255, 0.12);
+
+      color: #e8fef8;
+      transition: 0.25s ease;
+    }
+
+    /* Placeholder */
+    .input::placeholder {
+      color: #9ca3af;
+    }
+
+  /* Focus neón */
+    .input:focus {
+      outline: none;
+      border-color: #00ffc6;
+      box-shadow: 0 0 10px #00ffc666;
+      background: rgba(255, 255, 255, 0.10);
+    }
+
+  button, .btn {
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: rgba(0, 255, 198, 0.10); /* mismo volumen glass */
+    border: 1px solid rgba(0, 255, 198, 0.25);
+    color: #adfff0;
+    cursor: pointer;
+    font-weight: 600;
+    backdrop-filter: blur(6px);
+    transition: 0.25s ease;
+    
+  }
+
+  /* Hover tipo neón */
+  button:hover, .btn:hover {
+    background: rgba(0, 255, 198, 0.18);
+    border-color: #00ffc6;
+    box-shadow: 0 0 12px #00ffc666;
+  }
+
+  /* Focus igual que los inputs */
+  button:focus, .btn:focus {
+    outline: none;
+    border-color: #00ffc6;
+    box-shadow: 0 0 14px #00ffc688;
+  }
+
+  /* Ghost style coherente */
+  .btn.ghost {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cfeceb;
+  }
+
+  .btn.ghost:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: #00ffc6;
+    color: #00ffd3;
+    box-shadow: 0 0 12px #00ffc666;
+  }
   /* Reset small */
   :global(body) { margin: 0; font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
 
@@ -88,16 +233,24 @@
     margin-bottom: 18px;
   }
 
-  .avatar {
-    width: 56px; height: 56px; border-radius: 999px; object-fit: cover; border: 2px solid rgba(255,255,255,0.06);
-  }
-
   .profile h4 { margin: 0; font-size: 1rem; color: #bfeee0; }
   .profile p { margin: 0; font-size: 0.85rem; color: #aeb0c9; }
 
   .nav { margin-top: 8px; }
   .nav button {
-    width: 100%; text-align: left; background: transparent; border: none; color: #cfd6df; padding: 12px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+    width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: #cfd6df;
+  padding: 12px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 10px; /* 👈 separación entre botones */
   }
   .nav button:hover { background: rgba(255,255,255,0.02); }
   .nav button.active { background: linear-gradient(90deg,#0d2218, #0f2e26); color: #00ffc6; box-shadow: inset 0 0 0 1px rgba(0,255,198,0.04); }
@@ -121,9 +274,6 @@
   .small-card { background: linear-gradient(180deg,#27273e,#2d2d46); padding:14px; border-radius:10px; }
   .small-card p { margin: 0; }
 
-  .btn { background:#00d1b2; border:none; color:#06101a; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:600; }
-  .btn.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.06); color:#cfeceb; }
-
   /* responsive */
   @media (max-width: 880px) {
     .sidebar { display:none; }
@@ -136,7 +286,6 @@
 <div class="account-page">
   <aside class="sidebar" aria-label="Navegación de la cuenta">
     <div class="profile">
-      <img class="avatar" src="{avatarUrl}" alt="avatar" />
       <div>
         <h4>{user.name} {user.last_name}</h4>
         <p>{user.email}</p>
@@ -160,119 +309,101 @@
       </div>
     </div>
 
-    {#if selectedSection === 'personal'}
-      <section class="section-card">
-        <h2>Información personal</h2>
-        <div class="info-grid">
-          <div>
-            {#if !editing}
-              <div class="field">
-                <label>Nombre Completo</label>
-                <div class="value">{user.name} {user.last_name}</div>
-              </div>
+{#if selectedSection === 'personal'}
+  <section class="section-card">
+    <h2>Información personal</h2>
+    <div class="info-grid">
+      <div>
 
-              <div class="field">
-                <label>Correo</label>
-                <div class="value">{user.email}</div>
-              </div>
-
-              <div class="field">
-                <label>Numero de documento</label>
-                <div class="value">{user.document_number}</div>
-              </div>
-
-              <div style="margin-top:12px;">
-                <button class="btn" on:click={openEdit}>Editar</button>
-              </div>
-
-            {:else}
-              <div class="field">
-                <label>Nombre</label>
-                <input bind:value={editData.name} />
-              </div>
-
-              <div class="field">
-                <label>Correo</label>
-                <input bind:value={editData.email} />
-              </div>
-
-              <div class="field">
-                <label>Teléfono</label>
-                <input bind:value={editData.phone} />
-              </div>
-
-              <div style="margin-top:12px; display:flex; gap:8px;">
-                <button class="btn" on:click={saveEdit}>Guardar</button>
-                <button class="btn ghost" on:click={cancelEdit}>Cancelar</button>
-              </div>
-            {/if}
+        {#if !editing}
+          <!-- Vista normal -->
+          <div class="field">
+            <label>Nombre Completo</label>
+            <div class="value">{user.name} {user.last_name}</div>
           </div>
 
-          <aside class="small-card">
-            <p><strong>Cuenta creada:</strong></p>
-            <p>{user.joined}</p>
-            <p style="margin-top:12px; font-size:0.9rem; color:#cbd5d9">Mantén tu información actualizada para recuperar el acceso fácilmente.</p>
-          </aside>
+          <div class="field">
+            <label>Correo</label>
+            <div class="value">{user.email}</div>
+          </div>
+
+          <div class="field">
+            <label>Número de documento</label>
+            <div class="value">{user.document_number}</div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <button class="btn" on:click={openEdit}>Editar</button>
+          </div>
+
+        {:else}
+          <!-- Vista editable -->
+        <div class="field">
+          <label>Nombre</label>
+          <input class="input" bind:value={editData.name} />
         </div>
-      </section>
-    {/if}
 
-    {#if selectedSection === 'security'}
-      <section class="section-card">
-        <h2>Seguridad</h2>
-        <p>Dispositivos recientes y actividad de inicio de sesión.</p>
-
-        <div style="display:grid; gap:12px; margin-top:12px;">
-          {#each devices as d}
-            <div class="small-card" style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <div style="font-weight:600">{d.name}</div>
-                <div style="font-size:0.9rem; color:#bfc6d6">Última actividad: {d.lastSeen}</div>
-              </div>
-              <div>
-                <button class="btn ghost" on:click={() => {/* sign out device */}}>Cerrar sesión</button>
-              </div>
-            </div>
-          {/each}
+        <div class="field">
+          <label>Apellidos</label>
+          <input class="input" bind:value={editData.last_name} />
         </div>
-      </section>
-    {/if}
 
-    {#if selectedSection === 'payments'}
-      <section class="section-card">
-        <h2>Métodos de pago</h2>
-        <p>Administra tus tarjetas y métodos de pago.</p>
-
-        <div style="display:grid; gap:12px; margin-top:12px;">
-          {#each payments as p}
-            <div class="small-card" style="display:flex; justify-content:space-between; align-items:center;">
-              <div>{p.method}</div>
-              <div>
-                {#if p.active}
-                  <button class="btn ghost">Activo</button>
-                {:else}
-                  <button class="btn">Activar</button>
-                {/if}
-              </div>
-            </div>
-          {/each}
+        <div class="field">
+          <label>Correo</label>
+          <input class="input" bind:value={editData.email} />
         </div>
-      </section>
-    {/if}
 
-    {#if selectedSection === 'privacy'}
-      <section class="section-card">
-        <h2>Privacidad</h2>
-        <p>Controla tus permisos y la actividad que compartes.</p>
-      </section>
-    {/if}
+        <div class="field">
+          <label>Número de documento</label>
+          <input class="input" bind:value={editData.document_number} />
+        </div>
 
-    {#if selectedSection === 'preferences'}
-      <section class="section-card">
-        <h2>Preferencias</h2>
-        <p>Idioma, región y preferencias de notificación.</p>
-      </section>
-    {/if}
+          <div style="margin-top:12px; display:flex; gap:8px;">
+            <button class="btn" on:click={saveEdit}>Guardar</button>
+            <button class="btn ghost" on:click={cancelEdit}>Cancelar</button>
+          </div>
 
+        {/if}
+      </div>
+
+      <aside class="small-card">
+        <p><strong>Cuenta creada:</strong></p>
+        <p>{user.joined}</p>
+
+        <p style="margin-top:12px; font-size:0.9rem; color:#cbd5d9">
+          Mantén tu información actualizada para recuperar el acceso fácilmente.
+        </p>
+      </aside>
+    </div>
+  </section>
+{/if}
+
+
+  {#if selectedSection === 'security'}
+  <section class="section-card">
+  <div class="card">
+    <h2>Cambiar contraseña</h2>
+
+    <!-- Paso 1: Verificar contraseña -->
+    <div>
+      <label>Contraseña actual</label>
+      <input class="input" type="password" bind:value={oldPassword} />
+      <button on:click={verifyPassword(user.id)}>Verificar</button>
+    </div>
+
+    {#if verified}
+      <hr />
+
+      <label>Nueva contraseña</label>
+      <input class="input" type="password" bind:value={newPassword} />
+
+      <label>Confirmar nueva contraseña</label>
+      <input class="input" type="password" bind:value={confirmPassword} />
+
+      <button on:click={changePassword(user.id)}>Cambiar contraseña</button>
+    {/if}
+  </div>
+  </section>
+  {/if}
   </main>
 </div>

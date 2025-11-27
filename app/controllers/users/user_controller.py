@@ -6,6 +6,8 @@ from app.models.users.user_model import User #Model
 from app.models.services.service_model import Service
 from fastapi.encoders import jsonable_encoder #Serializable JSON structures
 from fastapi.responses import JSONResponse
+from fastapi_mail import FastMail, MessageSchema
+from app.config.email_config import mail_config
 from werkzeug.security import *
 
 
@@ -48,7 +50,7 @@ class UserController:
             conn.close()
 
         
-    def create_service(self, service: Service):   
+    async def create_service(self, service: Service):   
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -65,13 +67,104 @@ class UserController:
             )
 
             conn.commit()
-            conn.close()
 
-            return JSONResponse(status_code=200, content={"message": "Servicio solicitado"})
-        
+            # ------------------------------------------
+            # Obtener correo y nombre del cliente
+            # ------------------------------------------
+            cursor.execute(
+                "SELECT name, email FROM users WHERE id = %s",
+                (service.client_id,)
+            )
+            user = cursor.fetchone()
+
+            if not user:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+            user_name, user_email = user
+
+            # ------------------------------------------
+            # Enviar correo de servicio solicitado
+            # ------------------------------------------
+            fm = FastMail(mail_config)
+
+            html = f"""
+            <!DOCTYPE html>
+            <html lang="es">
+            <body style="margin:0; padding:0; font-family:Arial, sans-serif; background:#f4f4f7;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td align="center" style="padding:40px 0;">
+                            <table width="600" cellpadding="0" cellspacing="0"
+                                   style="background:white; padding:40px; border-radius:12px;
+                                   box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+
+                                <tr>
+                                    <td align="center" style="padding-bottom:20px;">
+                                        <h1 style="font-size:26px; margin:0; color:#111827;">
+                                            ¡Tu solicitud de servicio fue recibida!
+                                        </h1>
+                                        <p style="color:#6b7280; font-size:15px; margin:10px 0;">
+                                            Pronto un técnico revisará tu solicitud.
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div style="
+                                            background:#f9fafb; padding:20px; border-radius:10px;
+                                            border:1px solid #e5e7eb;
+                                        ">
+                                            <p style="font-size:16px; color:#374151;">
+                                                Hola <strong>{user_name}</strong>,
+                                            </p>
+
+                                            <p style="color:#4b5563; font-size:15px; line-height:1.6;">
+                                                Hemos recibido tu solicitud de servicio con los siguientes detalles:
+                                            </p>
+
+                                            <ul style="color:#4b5563; font-size:15px; line-height:1.8;">
+                                                <li><strong>Tipo:</strong> {service.service_type}</li>
+                                                <li><strong>Fecha:</strong> {service.request_date}</li>
+                                                <li><strong>Hora:</strong> {service.request_time}</li>
+                                                <li><strong>Dirección:</strong> {service.address}</li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td align="center" style="padding-top:25px; color:#9ca3af; font-size:13px;">
+                                        © 2025 Climatización Total. Servicio solicitado exitosamente.
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>
+            """
+
+            message = MessageSchema(
+                subject="Confirmación de solicitud de servicio",
+                recipients=[user_email],
+                body=html,
+                subtype="html"
+            )
+
+            await fm.send_message(message)
+
+            return JSONResponse(
+                status_code=200,
+                content={"message": "Servicio solicitado y correo enviado"}
+            )
+
         except mysql.connector.Error as err:
             conn.rollback()
             raise HTTPException(status_code=500, detail=str(err))
+
         finally:
             conn.close()
 

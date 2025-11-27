@@ -18,7 +18,7 @@ class PDF(FPDF):
         self.service_id = service_id
 
     def header(self):
-        logo_path = "app/static/logo.jpeg"
+        logo_path = "app/static/5.png"
 
         if os.path.exists(logo_path):
             self.image(logo_path, x=10, y=8, w=28)

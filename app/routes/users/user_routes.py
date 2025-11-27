@@ -21,10 +21,8 @@ async def update(user_id: int, user: User, token_data: dict = Depends(verify_tok
 
 @router.post("/users/services/create")
 async def create_service(service: Service, token_data: dict = Depends(verify_token)):
-    response = userController.create_service(service)
+    response = await userController.create_service(service)
     return response
-
-
 
 @router.get("/users/services/list/{client_id}")
 async def get_services(client_id: int, token_data: dict = Depends(verify_token)):

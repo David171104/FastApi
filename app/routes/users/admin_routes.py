@@ -80,3 +80,15 @@ async def get_reports( technician_id: Optional[int] = None, status: str = "all",
     response = adminController.get_all_reports(technician_id, status, date_from, date_to)
     return response
  
+
+@router.post("/users/verify_password/{user_id}")
+async def verify_password(user_id: int, request: dict, token_data: dict = Depends(verify_token)):
+    return adminController.verify_password(user_id, request)
+
+@router.put("/users/change_password/{user_id}")
+async def change_password(user_id: int, request: dict, token_data: dict = Depends(verify_token)):
+    return adminController.change_password(user_id, request)
+
+@router.put("/users/update-profile/{user_id}")
+async def update_profile(user_id: int, request: dict, token_data: dict = Depends(verify_token)):
+    return adminController.update_profile(user_id, request)
