@@ -391,19 +391,25 @@
     <div class="modal">
       <h3>Solicitar Servicio</h3>
 
-      <label>Fecha del servicio</label>
+      <label>Fecha del servicio <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span> </label>
       <input type="date" bind:value={formData.request_date} required />
 
-      <label>Hora del servicio</label>
-      <input type="time" bind:value={formData.request_time} required />
+      <label>Hora del servicio <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span></label>
+      <input 
+        type="time" 
+        bind:value={formData.request_time} 
+        required
+        min="08:00"
+        max="17:00"
+      />
 
-      <label>Tipo de servicio</label>
+      <label>Tipo de servicio <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span></label>
       <select bind:value={formData.service_type}>
         <option value="Correctivo">Correctivo</option>
         <option value="Preventivo">Preventivo</option>
       </select>
 
-      <label>Dirección</label>
+      <label>Dirección <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span></label>
       <input type="text" placeholder="Dirección del servicio" bind:value={formData.address} required />
 
       <div class="modal-actions">
@@ -421,7 +427,7 @@
     <div class="modal">
       <h3>Editar Servicio</h3>
 
-      <label>Fecha del servicio</label>
+      <label>Fecha del servicio <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span></label>
       <input 
         type="date" 
         bind:value={selectedService.request_date} 
@@ -429,7 +435,7 @@
         disabled={selectedService.current_status === "assigned"}
       />
 
-      <label>Hora del servicio</label>
+      <label>Hora del servicio <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span></label>
       <input 
         type="time" 
         bind:value={selectedService.request_time} 
@@ -437,13 +443,13 @@
         disabled={selectedService.current_status === "assigned"}
       />
 
-      <label>Tipo de servicio</label>
+      <label>Tipo de servicio <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span></label>
       <select bind:value={selectedService.service_type}>
         <option value="Correctivo">Correctivo</option>
         <option value="Preventivo">Preventivo</option>
       </select>
 
-      <label>Dirección</label>
+      <label>Dirección <span style=" color: red; font-weight: bold; margin-left: 4px;">*</span></label>
       <input 
         type="text" 
         placeholder="Dirección del servicio" 
